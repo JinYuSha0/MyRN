@@ -112,6 +112,7 @@ public class RNApplication extends Application implements ReactApplication {
   @Override
   public void onCreate() {
     super.onCreate();
+    getReactNativeHost();
     SoLoader.init(this, /* native exopackage */ false);
     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
   }

@@ -16,7 +16,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
 import java.util.Map;
+import com.myrn.utils.phoneInfo;
 
 public class RNBridge extends ReactContextBaseJavaModule {
   @NonNull
@@ -30,7 +32,10 @@ public class RNBridge extends ReactContextBaseJavaModule {
   @org.jetbrains.annotations.Nullable
   @Override
   public Map<String, Object> getConstants() {
-    return super.getConstants();
+    HashMap<String, Object> map = new HashMap<>();
+    map.put("statusBarHeight", phoneInfo.getPhoneStatusBarHeight(getActivity()));
+    map.put("model", phoneInfo.getPhoneModel());
+    return map;
   }
 
   @ReactMethod

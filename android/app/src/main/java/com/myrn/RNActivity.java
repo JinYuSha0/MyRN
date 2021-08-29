@@ -42,7 +42,7 @@ public abstract class RNActivity extends androidx.fragment.app.FragmentActivity 
 
   protected RNActivityDelegate createRNActivityDelegate() {
     if (mDelegate == null) {
-      mDelegate = new RNActivityDelegate(this, getMainComponentName()) {
+      mDelegate = new RNActivityDelegate(this, getBundle().moduleName) {
         @Override
         protected ReactRootView createRootView() {
           return new RNGestureHandlerEnabledRootView(RNActivity.this);
@@ -95,6 +95,8 @@ public abstract class RNActivity extends androidx.fragment.app.FragmentActivity 
           }
         });
       }
+    } else {
+      initView();
     }
   }
 
@@ -120,9 +122,6 @@ public abstract class RNActivity extends androidx.fragment.app.FragmentActivity 
 
   protected void initView() {
     RNBundle innerBundle = getBundle();
-    Bundle bundle = new Bundle();
-    bundle.putString("moduleName", innerBundle.moduleName);
-    bundle.putBundle("params", innerBundle.params);
     if (innerBundle.moduleName != null && !"".equals(innerBundle.moduleName)) {
       mDelegate.loadApp(innerBundle.moduleName);
     }
@@ -224,17 +223,15 @@ public abstract class RNActivity extends androidx.fragment.app.FragmentActivity 
 
   public abstract RNBundle getBundle();
 
-  public abstract String getMainComponentName();
-
   public static interface LoadScriptListener {
     public void onLoadComplete(boolean success, String bundlePath);
   }
 
   protected final ReactNativeHost getReactNativeHost() {
-    return RNApplication.mReactNativeHost;
+    return mDelegate.getReactNativeHost();
   }
 
   protected final ReactInstanceManager getReactInstanceManager() {
-    return getReactNativeHost().getReactInstanceManager();
+    return mDelegate.getReactInstanceManager();
   }
 }

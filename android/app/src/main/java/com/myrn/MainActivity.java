@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class MainActivity extends RNActivity {
+
   public static final RNActivity.BundleType string2BundleType(String bundleType) {
     switch (bundleType.toLowerCase()) {
       case "file":
@@ -45,16 +46,6 @@ public class MainActivity extends RNActivity {
   protected Bundle getDefaultParams() {
     Bundle bundle = new Bundle();
     return bundle;
-  }
-
-  @Override
-  public String getMainComponentName() {
-    RNBundle innerBundle = getBundle();
-    if (innerBundle.moduleName != null) {
-      return innerBundle.moduleName;
-    }
-    // app默认启动模块
-    return getDefaultComponentName();
   }
 
   @Override

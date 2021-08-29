@@ -20,12 +20,12 @@ public class RNActivityDelegate extends ReactActivityDelegate  {
 
   public RNActivityDelegate(Activity activity, String mainComponentName) {
     super(activity, mainComponentName);
-    mReactNativeHost = RNApplication.mReactNativeHost;
+    mReactNativeHost = getReactNativeHost();
   }
 
   public RNActivityDelegate(ReactActivity activity, String mainComponentName) {
     super(activity, mainComponentName);
-    mReactNativeHost = RNApplication.mReactNativeHost;
+    mReactNativeHost = getReactNativeHost();
   }
 
   @Override
@@ -36,7 +36,7 @@ public class RNActivityDelegate extends ReactActivityDelegate  {
     if (mReactDelegate == null) {
       if (enableCache) {
         mReactDelegate =
-                new ReactDelegate(getPlainActivity(), RNApplication.mReactNativeHost, moduleName, params) {
+                new ReactDelegate(getPlainActivity(), mReactNativeHost, moduleName, params) {
                   private ReactRootView mReactRootView;
 
                   @Override
@@ -73,7 +73,7 @@ public class RNActivityDelegate extends ReactActivityDelegate  {
                   }
                 };
       } else {
-        mReactDelegate = new ReactDelegate(this.getPlainActivity(), RNApplication.mReactNativeHost, moduleName, params) {
+        mReactDelegate = new ReactDelegate(this.getPlainActivity(), mReactNativeHost, moduleName, params) {
           protected ReactRootView createRootView() {
             return RNActivityDelegate.this.createRootView();
           }
@@ -113,6 +113,8 @@ public class RNActivityDelegate extends ReactActivityDelegate  {
 
   @Override
   protected ReactNativeHost getReactNativeHost() {
-    return super.getReactNativeHost();
+    // todo
+    return RNApplication.mReactNativeHost;
   }
+
 }
