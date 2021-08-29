@@ -1,0 +1,54 @@
+{
+  "name": "myRN",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "start": "react-native start",
+    "test": "jest",
+    "lint": "eslint .",
+    "bundle-common-android": "node ./multiBundle/scripts/common.js --platform android",
+    "bundle-bussines-android": "node ./multiBundle/scripts/common.js --platform android --buz true"
+  },
+  "dependencies": {
+    "@react-native-async-storage/async-storage": "^1.15.7",
+    "@react-navigation/bottom-tabs": "^6.0.5",
+    "@react-navigation/native": "^6.0.2",
+    "@react-navigation/native-stack": "^6.1.0",
+    "@react-navigation/stack": "^6.0.7",
+    "dayjs": "^1.10.6",
+    "decimal.js-light": "^2.5.1",
+    "react": "17.0.2",
+    "react-i18next": "^11.11.4",
+    "react-native": "0.65.1",
+    "react-native-gesture-handler": "^1.10.3",
+    "react-native-reanimated": "2.3.0-alpha.2",
+    "react-native-safe-area-context": "^3.3.0",
+    "react-native-screens": "^3.6.0",
+    "react-native-svg": "^12.1.1",
+    "react-native-ui-lib": "^5.30.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.15.0",
+    "@babel/runtime": "^7.15.3",
+    "@react-native-community/eslint-config": "^3.0.0",
+    "@types/jest": "^27.0.1",
+    "@types/react": "^17.0.19",
+    "@types/react-native": "^0.64.13",
+    "@types/react-test-renderer": "^17.0.1",
+    "babel-jest": "^27.1.0",
+    "babel-plugin-module-resolver": "^4.1.0",
+    "babel-plugin-transform-remove-console": "^6.9.4",
+    "eslint": "^7.32.0",
+    "jest": "^27.1.0",
+    "metro-react-native-babel-preset": "^0.66.2",
+    "react-native-codegen": "^0.0.7",
+    "react-native-svg-transformer": "^0.14.3",
+    "react-test-renderer": "17.0.2",
+    "typescript": "^4.4.2"
+  },
+  "jest": {
+    "preset": "react-native"
+  }
+}
