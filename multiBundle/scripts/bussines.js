@@ -14,6 +14,7 @@ const {
 } = require('../utils/getOutputpath');
 const getNewestSourceMap = require('../utils/getNewestSourceMap');
 const genPathFactory = require('../utils/genPathFactory');
+const genFileHash = require('../utils/genFileHash');
 
 const ctx = loadConfig();
 const rootPath = ctx.root;
@@ -23,6 +24,13 @@ const bunele = async (platform, component, entryFile, startId) => {
   const getModuleId = require('../utils/getModuleId')(true, startId);
   const bundleOutputPath = createDirIfNotExists(getBundleOutputPath(platform));
   const assetsOutPuthPath = createDirIfNotExists(getAssetsOutputPath(platform));
+  const fileName = `${String(component).toLocaleLowerCase()}.buz.${String(
+    platform,
+  ).toLocaleLowerCase()}.bundle`;
+  const bundleOutputFilePath = path.resolve(
+    createDirIfNotExists(bundleOutputPath),
+    fileName,
+  );
   const config = await loadMetroConfig(ctx);
   const moduleIdMap = require(getNewestSourceMap());
   config.serializer.processModuleFilter = function (module) {
@@ -34,7 +42,9 @@ const bunele = async (platform, component, entryFile, startId) => {
     ) {
       return false;
     }
-    if (moduleIdMap[genPath(path)]) {
+    const filePath = genPath(path);
+    const moduleInfo = moduleIdMap[filePath];
+    if (moduleInfo && moduleInfo.hash === genFileHash(path)) {
       return false;
     }
     return true;
@@ -62,12 +72,7 @@ const bunele = async (platform, component, entryFile, startId) => {
     output.save(
       bundle,
       {
-        bundleOutput: path.resolve(
-          createDirIfNotExists(bundleOutputPath),
-          `${String(component).toLocaleLowerCase()}.buz.${String(
-            platform,
-          ).toLocaleLowerCase()}.bundle`,
-        ),
+        bundleOutput: bundleOutputFilePath,
         encoding: 'utf-8',
       },
       console.log,
@@ -82,6 +87,9 @@ const bunele = async (platform, component, entryFile, startId) => {
       platform,
       createDirIfNotExists(assetsOutPuthPath),
     );
+    return {
+      [fileName]: genFileHash(bundleOutputFilePath),
+    };
   } finally {
     server.end();
   }

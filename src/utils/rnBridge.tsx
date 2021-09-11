@@ -16,7 +16,7 @@ export enum StatusBarMode {
 }
 
 /**
- *
+ * 从assets中加载模块
  * @param bundlePath
  * @param moduleName
  * @param statusBarMode

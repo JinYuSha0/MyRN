@@ -5,7 +5,7 @@
  * @returns
  */
 module.exports = function (isBussines, startId = 0) {
-  id = startId;
+  let id = startId;
   const commonModuleMap = new Map();
   const bussinesModuleMap = new Map();
   return path => {

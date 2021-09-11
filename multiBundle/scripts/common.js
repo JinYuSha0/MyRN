@@ -21,6 +21,7 @@ const {
 } = require('../utils/getOutputpath');
 const analysisRegisterComponent = require('../utils/analysisRegisterComponent');
 const bundleBuz = require('./bussines');
+const getNewestSourceMap = require('../utils/getNewestSourceMap');
 
 const args = require('../utils/args')();
 
@@ -83,10 +84,15 @@ const codeFilePath = path.resolve(
 fs.writeFileSync(codeFilePath, code);
 const sourceMapPath = path.resolve(__dirname, '../sourceMap');
 
-const moduleIdMap = Object.create(null);
+let moduleIdMap = Object.create(null);
 const platform = args['platform'] || 'android';
 const bundleOutputPath = createDirIfNotExists(getBundleOutputPath(platform));
 const assetsOutPuthPath = createDirIfNotExists(getAssetsOutputPath(platform));
+const outputBundleFileName = `common.${platform}.bundle`;
+const bundleOutputFilePath = path.resolve(
+  createDirIfNotExists(bundleOutputPath),
+  outputBundleFileName,
+);
 const [p, resolve] = deffered();
 const bundle = async platform => {
   const config = await loadMetroConfig(ctx);
@@ -112,10 +118,7 @@ const bundle = async platform => {
     output.save(
       bundle,
       {
-        bundleOutput: path.resolve(
-          createDirIfNotExists(bundleOutputPath),
-          'common.android.bundle',
-        ),
+        bundleOutput: bundleOutputFilePath,
         encoding: 'utf-8',
       },
       console.log,
@@ -147,22 +150,38 @@ const bundle = async platform => {
 if (!args.buz) {
   bundle(platform);
 } else {
-  resolve();
+  resolve(true);
 }
 
-p.then(() => {
+p.then(isBuz => {
   const pAll = [];
+  let startId = Object.keys(moduleIdMap).length;
+  if (isBuz) {
+    startId = Object.keys(require(getNewestSourceMap())).length;
+  }
   analysisRegisterComponent().then(res => {
-    let startId = Object.keys(moduleIdMap).length;
-    for (let component of res.keys()) {
+    for (let i = 0; i < Array.from(res.keys()).length; i++) {
+      const component = Array.from(res.keys())[i];
       const entryFilePath = path.resolve(
         createDirIfNotExists(codeDirPath),
         `${component}.${Math.random().toString(36).split('.')[1]}.js`,
       );
       fs.writeFileSync(entryFilePath, res.get(component));
-      pAll.push(bundleBuz(platform, component, entryFilePath, startId));
+      pAll.push(
+        bundleBuz(platform, component, entryFilePath, startId + i * 100000),
+      );
     }
-    Promise.all(pAll).then(() => {
+    Promise.all(pAll).then(hashArr => {
+      const hash = {
+        [outputBundleFileName]: genFileHash(bundleOutputFilePath),
+      };
+      hashArr.forEach(componentHash => {
+        Object.assign(hash, componentHash);
+      });
+      fs.writeFileSync(
+        path.resolve(bundleOutputPath, 'appSetting.json'),
+        JSON.stringify({ hash, timestamp: +new Date() }, undefined, 2),
+      );
       console.log('end');
     });
   });
