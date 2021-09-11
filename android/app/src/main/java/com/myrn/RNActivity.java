@@ -17,6 +17,7 @@ import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.PermissionAwareActivity;
 import com.facebook.react.modules.core.PermissionListener;
 import com.jaeger.library.StatusBarUtil;
+import com.myrn.utils.statusBar;
 import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
 
 public abstract class RNActivity extends androidx.fragment.app.FragmentActivity implements DefaultHardwareBackBtnHandler, PermissionAwareActivity {
@@ -33,16 +34,12 @@ public abstract class RNActivity extends androidx.fragment.app.FragmentActivity 
     if (mReactNativeHost == null) {
       mReactNativeHost = getReactNativeHost();
     }
-    // 设置StatusBar样式
-    if (getIntent() != null) {
-      setStatusBar(getIntent().getExtras());
-    }
     isDev = mReactNativeHost.getUseDeveloperSupport();
   }
 
   protected RNActivityDelegate createRNActivityDelegate() {
     if (mDelegate == null) {
-      mDelegate = new RNActivityDelegate(this, getBundle().moduleName) {
+      mDelegate = new RNActivityDelegate(this, null) {
         @Override
         protected ReactRootView createRootView() {
           return new RNGestureHandlerEnabledRootView(RNActivity.this);
@@ -55,8 +52,16 @@ public abstract class RNActivity extends androidx.fragment.app.FragmentActivity 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    mDelegate.onCreate(getBundle().toBundle());
-    if (!isDev) {
+    Bundle bundle = getBundle().toBundle();
+    if (getIntent() != null && getIntent().getExtras() != null) {
+      bundle.putAll(getIntent().getExtras());
+    }
+    // 设置StatusBar样式
+    setStatusBar(getBundle().params);
+    mDelegate.onCreate(bundle);
+    if (isDev) {
+      initView();
+    } else {
       // 非开发模式走拆包流程
       ReactInstanceManager manager = mReactNativeHost.getReactInstanceManager();
       final Activity currActivity = this;
@@ -95,8 +100,6 @@ public abstract class RNActivity extends androidx.fragment.app.FragmentActivity 
           }
         });
       }
-    } else {
-      initView();
     }
   }
 
@@ -129,17 +132,20 @@ public abstract class RNActivity extends androidx.fragment.app.FragmentActivity 
 
   protected void setStatusBar(@Nullable Bundle bundle) {
     if (bundle == null) return;
-    Boolean statusBarTransparent = bundle.getBoolean("aax_statusBarTransparent",false);
-    String statusBarDarkMode = bundle.getString("aax_statusBarDarkMode", "");
-    if (statusBarTransparent) {
+    Integer statusBarMode = bundle.getInt("statusBarMode",0);
+    // 沉浸式状态栏
+    if ((statusBarMode & statusBar.transparent) > 0) {
       StatusBarUtil.setTransparent(this);
     }
-    if (!"".equals(statusBarDarkMode)) {
-      if (statusBarDarkMode.equals("dark")) {
-        StatusBarUtil.setDarkMode(this);
-      } else {
-        StatusBarUtil.setLightMode(this);
-      }
+    // 设置黑色字体
+    if ((statusBarMode & statusBar.darkMode) > 0) {
+      StatusBarUtil.setLightMode(this);
+      StatusBarUtil.setTranslucent(this);
+    }
+    // 设置白色字体
+    if ((statusBarMode & statusBar.lightMode) > 0) {
+      StatusBarUtil.setDarkMode(this);
+      StatusBarUtil.setTranslucent(this);
     }
   }
 

@@ -1,18 +1,10 @@
 package com.myrn;
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.os.Bundle;
 
-import androidx.annotation.Nullable;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Map;
+import com.myrn.utils.statusBar;
 
 public class MainActivity extends RNActivity {
-
   public static final RNActivity.BundleType string2BundleType(String bundleType) {
     switch (bundleType.toLowerCase()) {
       case "file":
@@ -45,6 +37,7 @@ public class MainActivity extends RNActivity {
 
   protected Bundle getDefaultParams() {
     Bundle bundle = new Bundle();
+    bundle.putInt("statusBarMode", statusBar.lightMode);
     return bundle;
   }
 
@@ -58,9 +51,11 @@ public class MainActivity extends RNActivity {
     }
     if (bundle == null) bundle = new Bundle();
     String bundleType = bundle.getString("bundleType",null);
-    Bundle params = bundle.getBundle("params");
-    if (params == null) params = new Bundle();
-    params.putAll(getDefaultParams());
+    Bundle params = getDefaultParams();
+    Bundle extraParams = bundle.getBundle("params");
+    if (extraParams == null) extraParams = new Bundle();
+    params.putAll(bundle);
+    params.putAll(extraParams);
     if (bundleType == null) {
       return RNBundle.genAssetsBundle(getDefaultBundlePath(), getDefaultComponentName(), params);
     } else {

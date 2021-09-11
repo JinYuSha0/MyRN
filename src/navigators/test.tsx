@@ -1,25 +1,27 @@
 import React from 'react';
-import Home from '@screens/home/home';
+import Test from '@screens/test/test';
 import { createStackNavigator } from '@react-navigation/stack';
 import {
   HomeParamList,
   HomeNatigatorProps,
   HomeRouteName,
 } from '@screens/home/types';
+import { useHeaderHeight } from '@react-navigation/elements';
 
 const Stack = createStackNavigator<HomeParamList>();
 
-const HomeNavigator: React.FC<HomeNatigatorProps> = props => {
+const TestNavigator: React.FC<HomeNatigatorProps> = props => {
   const { routeName = HomeRouteName.Home, routeParams, screenOptions } = props;
   return (
     <Stack.Navigator initialRouteName={routeName} screenOptions={screenOptions}>
       <Stack.Screen
         name={HomeRouteName.Home}
-        component={Home}
+        component={Test}
         initialParams={routeParams}
+        options={{ title: 'TEST' }}
       />
     </Stack.Navigator>
   );
 };
 
-export default HomeNavigator;
+export default TestNavigator;

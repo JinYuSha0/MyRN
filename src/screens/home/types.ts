@@ -1,5 +1,6 @@
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
+import { StackNavigationOptions } from '@react-navigation/stack';
 
 export enum HomeRouteName {
   Home = 'Home',
@@ -20,6 +21,7 @@ export type HomeParamList = Omit<
 export type HomeNatigatorProps = {
   routeName?: HomeRouteName;
   routeParams?: ValueOf<HomeRouteParams>;
+  screenOptions?: StackNavigationOptions;
 };
 
 /** Navigation */

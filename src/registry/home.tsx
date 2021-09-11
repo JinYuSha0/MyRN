@@ -5,7 +5,7 @@ import { ScreenProps } from '@src/app.context';
 
 const Home: React.FC<ScreenProps> = props => {
   return (
-    <App>
+    <App {...props}>
       <HomeNavigator />
     </App>
   );

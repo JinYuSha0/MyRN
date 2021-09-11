@@ -1,24 +1,14 @@
-import React from 'react';
-import { View, Text } from 'react-native-ui-lib';
-import { StyleSheet } from 'react-native';
-import { ScreenHeight, ScreenWidth } from '@src/utils/constant';
+import React, { memo } from 'react';
+import App from './app';
+import TestNavigator from '@src/navigators/test';
+import { ScreenProps } from '@src/app.context';
 
-const Test: React.FC<{}> = props => {
+const Test: React.FC<ScreenProps> = props => {
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>This is test!</Text>
-    </View>
+    <App {...props}>
+      <TestNavigator />
+    </App>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    width: ScreenWidth,
-    height: ScreenHeight,
-  },
-  text: {
-    color: '#000',
-  },
-});
-
-export default Test;
+export default memo(Test);

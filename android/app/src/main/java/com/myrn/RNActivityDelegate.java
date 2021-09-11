@@ -32,7 +32,6 @@ public class RNActivityDelegate extends ReactActivityDelegate  {
   protected void onCreate(Bundle bundle) {
     String moduleName = bundle.getString("moduleName");
     Bundle params = bundle.getBundle("params");
-
     if (mReactDelegate == null) {
       if (enableCache) {
         mReactDelegate =
@@ -113,7 +112,6 @@ public class RNActivityDelegate extends ReactActivityDelegate  {
 
   @Override
   protected ReactNativeHost getReactNativeHost() {
-    // todo
     return RNApplication.mReactNativeHost;
   }
 

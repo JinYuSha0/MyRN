@@ -1,8 +1,14 @@
 import React, { useMemo, useContext } from 'react';
 
-export interface ScreenProps {}
+export interface ScreenProps {
+  routeName: string;
+  bundlePath: string;
+  bundleType: 'assets' | 'file' | 'network';
+  moduleName: string;
+  statusBarMode: number;
+}
 
-export interface AppContextProps extends ScreenProps {}
+export interface AppContextProps extends Partial<ScreenProps> {}
 
 const AppContext = React.createContext<AppContextProps>({});
 
