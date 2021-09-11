@@ -2,6 +2,7 @@ package com.myrn;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.ContentValues;
 import android.content.Context;
 
 import androidx.annotation.Nullable;
@@ -17,14 +18,26 @@ import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.soloader.SoLoader;
+
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import com.facebook.react.bridge.JSIModulePackage;
+import com.myrn.constant.StorageKey;
+import com.myrn.utils.File;
+import com.myrn.utils.Preferences;
 import com.swmansion.reanimated.ReanimatedJSIModulePackage;
+
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class RNApplication extends Application implements ReactApplication {
 
   public static ReactNativeHost mReactNativeHost;
+  public static RNDBHelper mReactNativeDB;
+  public static final Boolean isDebug = true;
 
   public static final ReactNativeHost getReactNativeHost(Boolean isDebug, Application application, @Nullable Activity activity) {
     if (mReactNativeHost == null) {
@@ -105,16 +118,42 @@ public class RNApplication extends Application implements ReactApplication {
 
   @Override
   public ReactNativeHost getReactNativeHost() {
-    return getReactNativeHost(false,RNApplication.this, null);
-//    return getReactNativeHost(BuildConfig.DEBUG,RNApplication.this, null);
+    return getReactNativeHost(isDebug,RNApplication.this, null);
   }
 
   @Override
   public void onCreate() {
     super.onCreate();
     getReactNativeHost();
+    Preferences.init(this);
+    mReactNativeDB = new RNDBHelper(this);
+    initDB();
     SoLoader.init(this, /* native exopackage */ false);
     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
+  }
+
+  public void initDB() {
+    Boolean isInit = (Boolean) Preferences.getValueByKey(StorageKey.INIT_DB,Boolean.class);
+    if (!isInit) {
+      try {
+        InputStream is = this.getAssets().open("appSetting.json");
+        String json = File.convertStream2String(is);
+        JSONObject jsonObject = new JSONObject(json);
+        JSONObject hashObj = jsonObject.getJSONObject("hash");
+        Iterator iterator = hashObj.keys();
+        ArrayList<ContentValues> contentValuesArr = new ArrayList<>();
+        while (iterator.hasNext()) {
+          String key = (String) iterator.next();
+          String value = hashObj.getString(key);
+          String filePath = "assets://" + key;
+          contentValuesArr.add(mReactNativeDB.createContentValues(key,"1.0.0",value,filePath));
+        }
+        mReactNativeDB.insertRows(contentValuesArr);
+        Preferences.storageKV(StorageKey.INIT_DB,true);
+      } catch (Exception exception) {
+        exception.printStackTrace();
+      }
+    }
   }
 
   /**

@@ -3,7 +3,6 @@ package com.myrn;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 
 import androidx.annotation.Nullable;
@@ -17,7 +16,7 @@ import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.PermissionAwareActivity;
 import com.facebook.react.modules.core.PermissionListener;
 import com.jaeger.library.StatusBarUtil;
-import com.myrn.utils.statusBar;
+import com.myrn.constant.StatusBar;
 import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
 
 public abstract class RNActivity extends androidx.fragment.app.FragmentActivity implements DefaultHardwareBackBtnHandler, PermissionAwareActivity {
@@ -134,16 +133,16 @@ public abstract class RNActivity extends androidx.fragment.app.FragmentActivity 
     if (bundle == null) return;
     Integer statusBarMode = bundle.getInt("statusBarMode",0);
     // 沉浸式状态栏
-    if ((statusBarMode & statusBar.transparent) > 0) {
+    if ((statusBarMode & StatusBar.transparent) > 0) {
       StatusBarUtil.setTransparent(this);
     }
     // 设置黑色字体
-    if ((statusBarMode & statusBar.darkMode) > 0) {
+    if ((statusBarMode & StatusBar.darkMode) > 0) {
       StatusBarUtil.setLightMode(this);
       StatusBarUtil.setTranslucent(this);
     }
     // 设置白色字体
-    if ((statusBarMode & statusBar.lightMode) > 0) {
+    if ((statusBarMode & StatusBar.lightMode) > 0) {
       StatusBarUtil.setDarkMode(this);
       StatusBarUtil.setTranslucent(this);
     }

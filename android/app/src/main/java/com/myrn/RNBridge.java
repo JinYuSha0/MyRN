@@ -18,9 +18,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
-import com.myrn.utils.phoneInfo;
+import com.myrn.utils.PhoneInfo;
 
-import static com.myrn.utils.math.getRandomString;
+import static com.myrn.utils.Math.getRandomString;
 
 public class RNBridge extends ReactContextBaseJavaModule {
   public static final String PREFIX = getRandomString(6) + "_";
@@ -38,7 +38,7 @@ public class RNBridge extends ReactContextBaseJavaModule {
   public Map<String, Object> getConstants() {
     HashMap<String, Object> map = new HashMap<>();
     map.put("prefix", PREFIX);
-    map.put("model", phoneInfo.getPhoneModel());
+    map.put("model", PhoneInfo.getPhoneModel());
     return map;
   }
 

@@ -2,7 +2,7 @@ package com.myrn;
 
 import android.os.Bundle;
 
-import com.myrn.utils.statusBar;
+import com.myrn.constant.StatusBar;
 
 public class MainActivity extends RNActivity {
   public static final RNActivity.BundleType string2BundleType(String bundleType) {
@@ -37,7 +37,7 @@ public class MainActivity extends RNActivity {
 
   protected Bundle getDefaultParams() {
     Bundle bundle = new Bundle();
-    bundle.putInt("statusBarMode", statusBar.lightMode);
+    bundle.putInt("statusBarMode", StatusBar.lightMode);
     return bundle;
   }
 
