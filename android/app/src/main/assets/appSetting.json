@@ -4,7 +4,7 @@
       "hash": "761687ed521d28aea9c59195367f015c"
     },
     "home.buz.android.bundle": {
-      "hash": "5d20594929521aeb0b0a04c376cf7a63",
+      "hash": "1377b598343644b7fa5d162c4750f017",
       "componentName": "Home"
     },
     "test.buz.android.bundle": {
@@ -12,5 +12,5 @@
       "componentName": "Test"
     }
   },
-  "timestamp": 1631426798465
+  "timestamp": 1631460509240
 }
