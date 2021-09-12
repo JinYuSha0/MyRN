@@ -88,7 +88,10 @@ const bunele = async (platform, component, entryFile, startId) => {
       createDirIfNotExists(assetsOutPuthPath),
     );
     return {
-      [fileName]: genFileHash(bundleOutputFilePath),
+      [fileName]: {
+        hash: genFileHash(bundleOutputFilePath),
+        componentName: component,
+      },
     };
   } finally {
     server.end();

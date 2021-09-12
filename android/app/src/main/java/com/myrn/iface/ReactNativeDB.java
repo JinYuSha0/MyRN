@@ -1,6 +1,7 @@
 package com.myrn.iface;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 
 import com.myrn.RNDBHelper;
 
@@ -13,7 +14,11 @@ public interface ReactNativeDB {
 
   public void insertRows(ArrayList<ContentValues> contentValuesArrList);
 
-  public ContentValues createContentValues(String ComponentName, Integer version, String Hash, String Filepath, Long PublishTime);
+  public ContentValues createContentValues(String BundleName, String ComponentName, Integer version, String Hash, String Filepath, Long PublishTime);
 
   public RNDBHelper.Result selectByBundleName(String componentName);
+
+  public ArrayList<RNDBHelper.Result> selectAll();
+
+  public RNDBHelper.Result parseCursor(Cursor cursor);
 }

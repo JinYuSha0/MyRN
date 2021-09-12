@@ -9,6 +9,8 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 
@@ -16,9 +18,13 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.facebook.react.bridge.WritableArray;
 import com.myrn.utils.PhoneInfo;
+import com.myrn.utils.RNConvert;
 
 import static com.myrn.utils.MathUtil.getRandomString;
 
@@ -45,6 +51,16 @@ public class RNBridge extends ReactContextBaseJavaModule {
   @ReactMethod
   public void log(String content) {
     Log.d("MY_RN_LOG", content);
+  }
+
+  @ReactMethod
+  public void getAllComponent(Promise promise) {
+    WritableArray array = Arguments.createArray();
+    ArrayList<RNDBHelper.Result> results = RNApplication.mReactNativeDB.selectAll();
+    for (RNDBHelper.Result result : results) {
+      array.pushMap(RNConvert.obj2Map(result));
+    }
+    promise.resolve(array);
   }
 
   @ReactMethod

@@ -171,16 +171,18 @@ p.then(isBuz => {
         bundleBuz(platform, component, entryFilePath, startId + i * 100000),
       );
     }
-    Promise.all(pAll).then(hashArr => {
-      const hash = {
-        [outputBundleFileName]: genFileHash(bundleOutputFilePath),
+    Promise.all(pAll).then(childComponents => {
+      const components = {
+        [outputBundleFileName]: {
+          hash: genFileHash(bundleOutputFilePath),
+        },
       };
-      hashArr.forEach(componentHash => {
-        Object.assign(hash, componentHash);
+      childComponents.forEach(componentHash => {
+        Object.assign(components, componentHash);
       });
       fs.writeFileSync(
         path.resolve(bundleOutputPath, 'appSetting.json'),
-        JSON.stringify({ hash, timestamp: +new Date() }, undefined, 2),
+        JSON.stringify({ components, timestamp: +new Date() }, undefined, 2),
       );
       console.log('end');
     });

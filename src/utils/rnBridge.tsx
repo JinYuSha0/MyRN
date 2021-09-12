@@ -1,4 +1,5 @@
 import { NativeModules } from 'react-native';
+import { Component } from '@src/types/bridge';
 
 export const { RNBridge } = NativeModules;
 
@@ -27,4 +28,12 @@ export function openFromAssets(
   statusBarMode: StatusBarMode = StatusBarMode.LIGHT,
 ) {
   RNBridge?.openFromAssets(bundlePath, moduleName, statusBarMode);
+}
+
+/**
+ * 获取本机所有模块
+ * @returns
+ */
+export function getAllComponent(): Promise<Component[]> {
+  return RNBridge?.getAllComponent();
 }

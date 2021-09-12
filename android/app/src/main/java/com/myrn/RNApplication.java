@@ -16,6 +16,7 @@ import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.soloader.SoLoader;
 
@@ -25,6 +26,8 @@ import com.facebook.react.bridge.JSIModulePackage;
 import com.myrn.constant.StorageKey;
 import com.myrn.utils.FileUtil;
 import com.myrn.utils.Preferences;
+import com.myrn.utils.RNConvert;
+import com.myrn.utils.ReflectUtil;
 import com.swmansion.reanimated.ReanimatedJSIModulePackage;
 
 import org.json.JSONObject;
@@ -134,20 +137,25 @@ public class RNApplication extends Application implements ReactApplication {
 
   public void initDB() {
     Boolean isInit = (Boolean) Preferences.getValueByKey(StorageKey.INIT_DB,Boolean.class);
-    if (!isInit) {
+    if (true) {
       try {
         InputStream is = this.getAssets().open("appSetting.json");
         String json = FileUtil.convertStream2String(is);
         JSONObject jsonObject = new JSONObject(json);
-        JSONObject hashObj = jsonObject.getJSONObject("hash");
+        JSONObject componentsObj = jsonObject.getJSONObject("components");
         Long publishTime = (Long) jsonObject.get("timestamp");
-        Iterator iterator = hashObj.keys();
+        Iterator iterator = componentsObj.keys();
         ArrayList<ContentValues> contentValuesArr = new ArrayList<>();
         while (iterator.hasNext()) {
           String key = (String) iterator.next();
-          String value = hashObj.getString(key);
+          JSONObject value = (JSONObject) componentsObj.get(key);
+          String hash = (String) value.get("hash");
+          String componentName = null;
+          try {
+            componentName = (String) value.get("componentName");
+          } catch (Exception ignore) {}
           String filePath = "assets://" + key;
-          contentValuesArr.add(mReactNativeDB.createContentValues(key,0,value,filePath,publishTime));
+          contentValuesArr.add(mReactNativeDB.createContentValues(key,componentName,0,hash,filePath,publishTime));
         }
         mReactNativeDB.insertRows(contentValuesArr);
         Preferences.storageKV(StorageKey.INIT_DB,true);
