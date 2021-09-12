@@ -2,10 +2,12 @@ package com.myrn;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
@@ -18,8 +20,6 @@ import com.facebook.react.modules.core.PermissionListener;
 import com.jaeger.library.StatusBarUtil;
 import com.myrn.constant.StatusBar;
 import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
-
-import static com.myrn.RNApplication.mReactNativeDB;
 
 public abstract class RNActivity extends androidx.fragment.app.FragmentActivity implements DefaultHardwareBackBtnHandler, PermissionAwareActivity {
   private boolean bundleLoaded = false;
@@ -107,7 +107,7 @@ public abstract class RNActivity extends androidx.fragment.app.FragmentActivity 
     final RNBundle bundle = getBundle();
     String bundleName = bundle.bundleName;
     String moduleName = bundle.moduleName;
-    RNDBHelper.Result result = mReactNativeDB.selectByBundleName(bundleName);
+    RNDBHelper.Result result = RNDBHelper.selectByBundleName(bundleName);
     CatalystInstance instance = RNBundleLoader.getCatalystInstance(mReactNativeHost);
     if (result == null) {
       // 未曾加载的模块
@@ -157,6 +157,7 @@ public abstract class RNActivity extends androidx.fragment.app.FragmentActivity 
     mDelegate.onPause();
   }
 
+  @RequiresApi(api = Build.VERSION_CODES.M)
   @Override
   protected void onResume() {
     super.onResume();

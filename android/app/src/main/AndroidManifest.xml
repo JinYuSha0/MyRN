@@ -1,7 +1,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="com.myrn">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.myrn">
 
-    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- 访问internet权限 -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- 往SDCard读入数据权限 -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <!-- 往SDCard写入数据权限 -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
       android:name=".RNApplication"

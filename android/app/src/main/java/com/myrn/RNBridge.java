@@ -56,7 +56,7 @@ public class RNBridge extends ReactContextBaseJavaModule {
   @ReactMethod
   public void getAllComponent(Promise promise) {
     WritableArray array = Arguments.createArray();
-    ArrayList<RNDBHelper.Result> results = RNApplication.mReactNativeDB.selectAll();
+    ArrayList<RNDBHelper.Result> results = RNDBHelper.selectAll();
     for (RNDBHelper.Result result : results) {
       array.pushMap(RNConvert.obj2Map(result));
     }
