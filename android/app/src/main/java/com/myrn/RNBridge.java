@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import com.myrn.utils.PhoneInfo;
 
-import static com.myrn.utils.Math.getRandomString;
+import static com.myrn.utils.MathUtil.getRandomString;
 
 public class RNBridge extends ReactContextBaseJavaModule {
   public static final String PREFIX = getRandomString(6) + "_";
@@ -48,24 +48,20 @@ public class RNBridge extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void openFromAssets(String bundlePath, String moduleName, @Nullable Integer statusBarMode) {
+  public void openFromAssets(String bundleName, String moduleName, @Nullable Integer statusBarMode) {
     Activity activity = getActivity();
     if (activity == null) return;
     Intent intent = new Intent(activity, MainActivity.class);
-    Bundle bundle = createBundle("assets", bundlePath, moduleName, statusBarMode);
+    Bundle bundle = createBundle(bundleName, moduleName, statusBarMode);
     intent.putExtras(bundle);
     activity.startActivity(intent);
   }
 
-  public Bundle createBundle(String bundleType, String bundleURI, String moduleName, @Nullable Integer statusBarMode) {
+  public Bundle createBundle(String bundleName, String moduleName, @Nullable Integer statusBarMode) {
     Bundle bundle = new Bundle();
-    RNActivity.BundleType type = MainActivity.string2BundleType(bundleType);
-    bundle.putString("bundleType", bundleType);
     bundle.putString("moduleName", moduleName);
     bundle.putInt("statusBarMode", statusBarMode == null ? 0 : statusBarMode);
-    if (type == RNActivity.BundleType.ASSETS) {
-      bundle.putString("bundlePath", bundleURI);
-    }
+    bundle.putString("bundleName", bundleName);
     return bundle;
   }
 

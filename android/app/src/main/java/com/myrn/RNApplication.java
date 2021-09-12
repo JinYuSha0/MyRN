@@ -23,7 +23,7 @@ import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import com.facebook.react.bridge.JSIModulePackage;
 import com.myrn.constant.StorageKey;
-import com.myrn.utils.File;
+import com.myrn.utils.FileUtil;
 import com.myrn.utils.Preferences;
 import com.swmansion.reanimated.ReanimatedJSIModulePackage;
 
@@ -37,7 +37,7 @@ public class RNApplication extends Application implements ReactApplication {
 
   public static ReactNativeHost mReactNativeHost;
   public static RNDBHelper mReactNativeDB;
-  public static final Boolean isDebug = true;
+  public static final Boolean isDebug = false;
 
   public static final ReactNativeHost getReactNativeHost(Boolean isDebug, Application application, @Nullable Activity activity) {
     if (mReactNativeHost == null) {
@@ -137,16 +137,17 @@ public class RNApplication extends Application implements ReactApplication {
     if (!isInit) {
       try {
         InputStream is = this.getAssets().open("appSetting.json");
-        String json = File.convertStream2String(is);
+        String json = FileUtil.convertStream2String(is);
         JSONObject jsonObject = new JSONObject(json);
         JSONObject hashObj = jsonObject.getJSONObject("hash");
+        Long publishTime = (Long) jsonObject.get("timestamp");
         Iterator iterator = hashObj.keys();
         ArrayList<ContentValues> contentValuesArr = new ArrayList<>();
         while (iterator.hasNext()) {
           String key = (String) iterator.next();
           String value = hashObj.getString(key);
           String filePath = "assets://" + key;
-          contentValuesArr.add(mReactNativeDB.createContentValues(key,"1.0.0",value,filePath));
+          contentValuesArr.add(mReactNativeDB.createContentValues(key,0,value,filePath,publishTime));
         }
         mReactNativeDB.insertRows(contentValuesArr);
         Preferences.storageKV(StorageKey.INIT_DB,true);

@@ -4,7 +4,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.Scanner;
 
-public class File {
+public class FileUtil {
   public static String convertStream2String(InputStream is) {
     String s = null;
     try {

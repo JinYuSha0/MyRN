@@ -21,7 +21,7 @@ public class RNDBHelper extends SQLiteOpenHelper implements ReactNativeDB {
 
   @Override
   public void onCreate(SQLiteDatabase sqLiteDatabase) {
-    String sql = "create table if not exists " + TABLE_NAME + " (ComponentName text primary key, Version text, Hash text, Filepath text, InstallTime integer)";
+    String sql = "create table if not exists " + TABLE_NAME + " (BundleName text, Version interge, Hash text, Filepath text, PublishTime interge, InstallTime integer, primary key(BundleName, Version))";
     sqLiteDatabase.execSQL(sql);
   }
 
@@ -58,42 +58,46 @@ public class RNDBHelper extends SQLiteOpenHelper implements ReactNativeDB {
   }
 
   @Override
-  public ContentValues createContentValues(String ComponentName, String Version, String Hash, String Filepath) {
+  public ContentValues createContentValues(String BundleName, Integer Version, String Hash, String Filepath, Long PublishTime) {
     ContentValues contentValues = new ContentValues();
-    contentValues.put("ComponentName", ComponentName);
+    contentValues.put("BundleName", BundleName);
     contentValues.put("Version", Version);
     contentValues.put("Hash", Hash);
     contentValues.put("Filepath", Filepath);
+    contentValues.put("PublishTime", PublishTime);
     contentValues.put("InstallTime", System.currentTimeMillis());
     return contentValues;
   }
 
   @Override
-  public RNDBHelper.Result selectByComponentName(String componentName) {
-    Cursor cursor = this.getReadableDatabase().query(TABLE_NAME,new String[]{"*"},"ComponentName = ?", new String[]{componentName}, null,null,null);
+  public RNDBHelper.Result selectByBundleName(String BundleName) {
+    Cursor cursor = this.getReadableDatabase().query(TABLE_NAME,new String[]{"*"},"BundleName = ?", new String[]{BundleName}, null,null,null);
     Result result = null;
     if (cursor.moveToNext()) {
-      result = new Result(componentName,
-              cursor.getString(cursor.getColumnIndex("Version")),
+      result = new Result(BundleName,
+              cursor.getInt(cursor.getColumnIndex("Version")),
               cursor.getString(cursor.getColumnIndex("Hash")),
               cursor.getString(cursor.getColumnIndex("Filepath")),
+              cursor.getLong(cursor.getColumnIndex("PublishTime")),
               cursor.getLong(cursor.getColumnIndex("InstallTime")));
     }
     return result;
   }
 
   public class Result {
-    String ComponentName;
-    String Version;
+    String BundleName;
+    Integer Version;
     String Hash;
     String FilePath;
+    Long PublishTime;
     Long InstallTime;
 
-    public Result(String componentName, String version, String hash, String filePath, Long installTime) {
-      ComponentName = componentName;
+    public Result(String bundleName, Integer version, String hash, String filePath, Long publishTime, Long installTime) {
+      BundleName = bundleName;
       Version = version;
       Hash = hash;
       FilePath = filePath;
+      PublishTime = publishTime;
       InstallTime = installTime;
     }
   }

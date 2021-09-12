@@ -13,7 +13,7 @@ public interface ReactNativeDB {
 
   public void insertRows(ArrayList<ContentValues> contentValuesArrList);
 
-  public ContentValues createContentValues(String ComponentName, String version, String Hash, String Filepath);
+  public ContentValues createContentValues(String ComponentName, Integer version, String Hash, String Filepath, Long PublishTime);
 
-  public RNDBHelper.Result selectByComponentName(String componentName);
+  public RNDBHelper.Result selectByBundleName(String componentName);
 }

@@ -19,8 +19,9 @@ import com.jaeger.library.StatusBarUtil;
 import com.myrn.constant.StatusBar;
 import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
 
+import static com.myrn.RNApplication.mReactNativeDB;
+
 public abstract class RNActivity extends androidx.fragment.app.FragmentActivity implements DefaultHardwareBackBtnHandler, PermissionAwareActivity {
-  public enum BundleType {ASSETS, FILE, NETWORK}
   private boolean bundleLoaded = false;
   private ReactNativeHost mReactNativeHost;
   private boolean isDev;
@@ -104,22 +105,20 @@ public abstract class RNActivity extends androidx.fragment.app.FragmentActivity 
 
   protected void loadScript(LoadScriptListener loadScriptListener) {
     final RNBundle bundle = getBundle();
-    String bundlePath = bundle.bundlePath;
-    String bundleURL = bundle.bundleURL;
-    BundleType bundleType = bundle.bundleType;
+    String bundleName = bundle.bundleName;
+    String moduleName = bundle.moduleName;
+    RNDBHelper.Result result = mReactNativeDB.selectByBundleName(bundleName);
     CatalystInstance instance = RNBundleLoader.getCatalystInstance(mReactNativeHost);
-    if (bundleType == BundleType.ASSETS) {
-      RNBundleLoader.loadScriptFromAsset(getApplicationContext(),instance,bundlePath,false);
+    if (result == null) {
+      // 未曾加载的模块
+    } else {
+      RNBundleLoader.loadScript(getApplicationContext(),instance,result.FilePath,false);
       loadScriptListener.onLoadComplete(true,null);
     }
   }
 
   protected void runApp(String bundlePath) {
-    RNBundle rnBundle = getBundle();
-    if (rnBundle.bundleType == BundleType.NETWORK) {
-    } else {
-      initView();
-    }
+    initView();
   }
 
   protected void initView() {

@@ -34,6 +34,12 @@ public class RNBundleLoader {
     return context.getCatalystInstance();
   }
 
+  public static void loadScript(Context context, CatalystInstance instance, String filePath, boolean isSync) {
+    if (filePath.startsWith("assets://")) {
+      loadScriptFromAsset(context, instance, filePath, isSync);
+    }
+  }
+
   public static void loadScriptFromAsset(Context context, CatalystInstance instance, String assetName, boolean isSync) {
     if (sLoadedBundle.contains(assetName)) {
       return;

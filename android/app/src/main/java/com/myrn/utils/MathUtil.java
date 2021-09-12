@@ -2,7 +2,7 @@ package com.myrn.utils;
 
 import java.util.Random;
 
-public class Math {
+public class MathUtil {
   public static String getRandomString(int length) {
     String str="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     Random random=new Random();
