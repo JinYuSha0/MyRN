@@ -138,7 +138,17 @@ const bundle = async platform => {
         createDirIfNotExists(sourceMapPath),
         `moduleIdMap-${+new Date()}.json`,
       ),
-      JSON.stringify(moduleIdMap, null, 2),
+      JSON.stringify(
+        Object.assign({
+          [bundleOutputFilePath]: {
+            id: -1,
+            hash: genFileHash(bundleOutputFilePath),
+          },
+          ...moduleIdMap,
+        }),
+        null,
+        2,
+      ),
     );
   } finally {
     fs.unlinkSync(codeFilePath);
@@ -168,23 +178,38 @@ p.then(isBuz => {
       );
       fs.writeFileSync(entryFilePath, res.get(component));
       pAll.push(
-        bundleBuz(platform, component, entryFilePath, startId + i * 100000),
+        bundleBuz(
+          platform,
+          component,
+          entryFilePath,
+          startId + i * 100000,
+          isBuz,
+        ),
       );
     }
-    Promise.all(pAll).then(childComponents => {
-      const components = {
-        [outputBundleFileName]: {
-          hash: genFileHash(bundleOutputFilePath),
-        },
-      };
-      childComponents.forEach(componentHash => {
-        Object.assign(components, componentHash);
+    Promise.all(pAll)
+      .then(childComponents => {
+        if (!isBuz) {
+          const components = {
+            [outputBundleFileName]: {
+              hash: genFileHash(bundleOutputFilePath),
+            },
+          };
+          childComponents.forEach(componentHash => {
+            Object.assign(components, componentHash);
+          });
+          fs.writeFileSync(
+            path.resolve(bundleOutputPath, 'appSetting.json'),
+            JSON.stringify(
+              { components, timestamp: +new Date() },
+              undefined,
+              2,
+            ),
+          );
+        }
+      })
+      .then(() => {
+        console.log('end');
       });
-      fs.writeFileSync(
-        path.resolve(bundleOutputPath, 'appSetting.json'),
-        JSON.stringify({ components, timestamp: +new Date() }, undefined, 2),
-      );
-      console.log('end');
-    });
   });
 });

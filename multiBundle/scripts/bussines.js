@@ -1,4 +1,6 @@
+const fs = require('fs');
 const path = require('path');
+const compressing = require('compressing');
 const Server = require('metro/src/Server');
 const output = require('metro/src/shared/output/bundle');
 const loadConfig =
@@ -7,10 +9,12 @@ const loadMetroConfig =
   require('@react-native-community/cli/build/tools/loadMetroConfig').default;
 const saveAssets =
   require('@react-native-community/cli/build/commands/bundle/saveAssets').default;
-const { createDirIfNotExists } = require('../utils/fsUtils');
+const { createDirIfNotExists, delDir } = require('../utils/fsUtils');
 const {
   getBundleOutputPath,
   getAssetsOutputPath,
+  genBuzBundleOutputPath,
+  genBuzAssetsOutputPath,
 } = require('../utils/getOutputpath');
 const getNewestSourceMap = require('../utils/getNewestSourceMap');
 const genPathFactory = require('../utils/genPathFactory');
@@ -20,10 +24,20 @@ const ctx = loadConfig();
 const rootPath = ctx.root;
 const genPath = genPathFactory(rootPath);
 
-const bunele = async (platform, component, entryFile, startId) => {
+const bunele = async (platform, component, entryFile, startId, isBuz) => {
   const getModuleId = require('../utils/getModuleId')(true, startId);
-  const bundleOutputPath = createDirIfNotExists(getBundleOutputPath(platform));
-  const assetsOutPuthPath = createDirIfNotExists(getAssetsOutputPath(platform));
+  const bundlePath = isBuz
+    ? genBuzBundleOutputPath(platform, component)
+    : getBundleOutputPath(platform);
+  const assetsPath = isBuz
+    ? genBuzAssetsOutputPath(platform, component)
+    : getAssetsOutputPath(platform);
+  if (isBuz) {
+    delDir(bundlePath);
+    delDir(assetsPath);
+  }
+  const bundleOutputPath = createDirIfNotExists(bundlePath);
+  const assetsOutPuthPath = createDirIfNotExists(assetsPath);
   const fileName = `${String(component).toLocaleLowerCase()}.buz.${String(
     platform,
   ).toLocaleLowerCase()}.bundle`;
@@ -33,6 +47,9 @@ const bunele = async (platform, component, entryFile, startId) => {
   );
   const config = await loadMetroConfig(ctx);
   const moduleIdMap = require(getNewestSourceMap());
+  const commonHash = Object.keys(moduleIdMap)
+    .map(key => moduleIdMap[key])
+    .find(o => o.id === -1).hash;
   config.serializer.processModuleFilter = function (module) {
     const { path } = module;
     if (
@@ -87,9 +104,38 @@ const bunele = async (platform, component, entryFile, startId) => {
       platform,
       createDirIfNotExists(assetsOutPuthPath),
     );
+    const hash = genFileHash(bundleOutputFilePath);
+    if (isBuz) {
+      fs.writeFileSync(
+        path.join(bundleOutputPath, 'setting.json'),
+        JSON.stringify(
+          {
+            hash,
+            commonHash,
+            bundleName: fileName,
+            componentName: component,
+            timestamp: +new Date(),
+          },
+          undefined,
+          2,
+        ),
+      );
+      console.log(
+        bundleOutputPath,
+        path.join(bundleOutputPath, '../', `${component}-${hash}.zip`),
+      );
+      await compressing.zip.compressDir(
+        bundleOutputPath,
+        path.join(bundleOutputPath, '../', `${component}-${hash}.zip`),
+        {
+          relativePath: hash,
+          ignoreBase: true,
+        },
+      );
+    }
     return {
       [fileName]: {
-        hash: genFileHash(bundleOutputFilePath),
+        hash,
         componentName: component,
       },
     };

@@ -60,4 +60,5 @@ buck-out/
 
 /multiBundle/temp/
 /multiBundle/sourceMap/
+/multiBundle/buzBundle/
 
