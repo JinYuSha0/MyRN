@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.ContentValues;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -26,8 +27,10 @@ import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import com.facebook.react.bridge.JSIModulePackage;
 import com.myrn.constant.StorageKey;
+import com.myrn.entity.Component;
 import com.myrn.utils.FileUtil;
 import com.myrn.utils.Preferences;
+import com.myrn.utils.RequestManager;
 import com.myrn.utils.download.DownloadProgressListener;
 import com.myrn.utils.download.DownloadTask;
 import com.swmansion.reanimated.ReanimatedJSIModulePackage;
@@ -35,8 +38,10 @@ import com.swmansion.reanimated.ReanimatedJSIModulePackage;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 public class RNApplication extends Application implements ReactApplication {
 
@@ -208,30 +213,57 @@ public class RNApplication extends Application implements ReactApplication {
    * 检查是否有新的模块需要下载
    */
   private void checkUpdate() {
-    ArrayList<RNDBHelper.Result> results = RNDBHelper.selectAll();
-    // todo 获取bundle接口与本机模块hash对比如果不一致则下载新的
-    new Thread(new DownloadTask(
-            this,
-            "https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg.daimg.com%2Fuploads%2Fallimg%2F141028%2F3-14102r33154.jpg&refer=http%3A%2F%2Fimg.daimg.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1634043645&t=b53fff837a6b0af392dd9010741e74a5",
-            "aaa.jpg",
-            this.getExternalFilesDir(null),
-            new DownloadProgressListener() {
-              @Override
-              public void onDownloadSize(int downloadedSize) {
-                System.out.println(downloadedSize);
-              }
+    try {
+      final File downloadPath = this.getExternalFilesDir(null);
+      final Context mContext = this;
+      ArrayList<RNDBHelper.Result> results = RNDBHelper.selectAll();
+      final HashMap<String, String> resultMap = new HashMap<>();
+      for (int i = 0; i < results.size(); i++) {
+        RNDBHelper.Result curr = results.get(i);
+        if (curr.ComponentName != null) {
+          resultMap.put(curr.ComponentName, curr.Hash);
+        }
+      }
+      RequestManager.getInstance(this).Get("/rn/checkUpdate", new HashMap<String, String>(), new RequestManager.RequestCallBack<ArrayList<Component>>() {
+        @Override
+        public void onFailure(RequestManager.MyResponse<Object> error) {
+          System.out.printf(error.message);
+        }
 
-              @Override
-              public void onDownloadFailure(Exception e) {
-                System.out.println("download failure");
-              }
-
-              @Override
-              public void onDownLoadComplete(File file) {
-                System.out.println("download success");
-              }
-            })
-    ).start();
+        @Override
+        public void onSuccess(RequestManager.MyResponse<ArrayList<Component>> data) {
+          for (int i = 0; i < data.data.size(); i++) {
+            Component curr = data.data.get(i);
+//            if (resultMap.get(curr.componentName).equals(curr.hash)) {
+//              new Thread(new DownloadTask(
+//                      mContext,
+//                      curr.downloadUrl,
+//                      String.format("%s-%s.zip",curr.componentName,curr.hash),
+//                      downloadPath,
+//                      new DownloadProgressListener() {
+//                        @Override
+//                        public void onDownloadSize(int downloadedSize) {
+//                          System.out.println(downloadedSize);
+//                        }
+//
+//                        @Override
+//                        public void onDownloadFailure(Exception e) {
+//                          System.out.println("download failure");
+//                        }
+//
+//                        @Override
+//                        public void onDownLoadComplete(File file) {
+//                          System.out.println("download success");
+//                        }
+//                      })
+//              ).start();
+//            }
+          }
+        }
+      }).request();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 
   /**

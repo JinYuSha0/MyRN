@@ -21,11 +21,26 @@ import com.jaeger.library.StatusBarUtil;
 import com.myrn.constant.StatusBar;
 import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
 
+import java.util.ArrayList;
+
 public abstract class RNActivity extends androidx.fragment.app.FragmentActivity implements DefaultHardwareBackBtnHandler, PermissionAwareActivity {
   private boolean bundleLoaded = false;
   private ReactNativeHost mReactNativeHost;
   private boolean isDev;
   private RNActivityDelegate mDelegate;
+  private static ArrayList<RNActivity> mActivityList = new ArrayList();
+
+  synchronized public static Activity getActivity() {
+    if (mActivityList.size() > 0) {
+      for (int i = mActivityList.size() - 1; i >= 0; i--) {
+        Activity cActivity = mActivityList.get(i);
+        if (!cActivity.isFinishing()) {
+          return cActivity;
+        }
+      }
+    }
+    return null;
+  }
 
   protected RNActivity() {
     // 创建delegate
@@ -52,6 +67,7 @@ public abstract class RNActivity extends androidx.fragment.app.FragmentActivity 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    mActivityList.add(this);
     Bundle bundle = getBundle().toBundle();
     if (getIntent() != null && getIntent().getExtras() != null) {
       bundle.putAll(getIntent().getExtras());
@@ -168,6 +184,7 @@ public abstract class RNActivity extends androidx.fragment.app.FragmentActivity 
   protected void onDestroy() {
     super.onDestroy();
     mDelegate.onDestroy();
+    mActivityList.remove(this);
   }
 
   @Override

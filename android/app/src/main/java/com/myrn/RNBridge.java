@@ -83,6 +83,8 @@ public class RNBridge extends ReactContextBaseJavaModule {
 
   public static Activity getActivity () {
     try {
+      Activity lastActivity = RNActivity.getActivity();
+      if (lastActivity != null) return lastActivity;
       @SuppressLint("PrivateApi") Class activityThreadClass = Class.forName("android.app.ActivityThread");
       Object activityThread = activityThreadClass.getMethod("currentActivityThread").invoke(
               null);
