@@ -26,6 +26,7 @@ public class DownloadTask implements Runnable {
       loader = new FileDownloadered(context, path, filename, saveDir, 1);
       loader.download(this.downloadProgressListener);
     } catch (Exception e) {
+      this.downloadProgressListener.onDownloadFailure(e);
       e.printStackTrace();
     }
   }

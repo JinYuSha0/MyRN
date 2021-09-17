@@ -22,12 +22,22 @@ import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.soloader.SoLoader;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import com.facebook.react.bridge.JSIModulePackage;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.myrn.constant.StorageKey;
 import com.myrn.entity.Component;
+import com.myrn.entity.ComponentSetting;
+import com.myrn.entity.VersionInfo;
+import com.myrn.iface.MyResponse;
 import com.myrn.utils.FileUtil;
 import com.myrn.utils.Preferences;
 import com.myrn.utils.RequestManager;
@@ -35,13 +45,19 @@ import com.myrn.utils.download.DownloadProgressListener;
 import com.myrn.utils.download.DownloadTask;
 import com.swmansion.reanimated.ReanimatedJSIModulePackage;
 
+import net.lingala.zip4j.ZipFile;
+import net.lingala.zip4j.model.UnzipParameters;
+import net.lingala.zip4j.model.ZipParameters;
+
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.zip.ZipInputStream;
 
 public class RNApplication extends Application implements ReactApplication {
 
@@ -179,12 +195,14 @@ public class RNApplication extends Application implements ReactApplication {
     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
   }
 
+  /**
+   * 初始化数据库
+   */
   private void initDB() {
     Boolean isInit = (Boolean) Preferences.getValueByKey(StorageKey.INIT_DB,Boolean.class);
     if (!isInit) {
       try {
-        InputStream is = this.getAssets().open("appSetting.json");
-        String json = FileUtil.convertStream2String(is);
+        String json = FileUtil.readFileFromAssets(this,"appSetting.json");
         JSONObject jsonObject = new JSONObject(json);
         JSONObject componentsObj = jsonObject.getJSONObject("components");
         Long publishTime = (Long) jsonObject.get("timestamp");
@@ -217,50 +235,98 @@ public class RNApplication extends Application implements ReactApplication {
       final File downloadPath = this.getExternalFilesDir(null);
       final Context mContext = this;
       ArrayList<RNDBHelper.Result> results = RNDBHelper.selectAll();
-      final HashMap<String, String> resultMap = new HashMap<>();
+      final HashMap<String, VersionInfo> componentMap = new HashMap<>();
       for (int i = 0; i < results.size(); i++) {
         RNDBHelper.Result curr = results.get(i);
         if (curr.ComponentName != null) {
-          resultMap.put(curr.ComponentName, curr.Hash);
+          VersionInfo info = new VersionInfo(curr.Hash, curr.Version);
+          componentMap.put(curr.ComponentName, info);
         }
       }
-      RequestManager.getInstance(this).Get("/rn/checkUpdate", new HashMap<String, String>(), new RequestManager.RequestCallBack<ArrayList<Component>>() {
+      RequestManager.getInstance(this).Get("/rn/checkUpdate", new HashMap<String, String>(), new RequestManager.RequestCallBack<MyResponse<ArrayList<Component>>, MyResponse<Object>>() {
         @Override
-        public void onFailure(RequestManager.MyResponse<Object> error) {
-          System.out.printf(error.message);
+        public void onFailure(MyResponse<Object> error, Exception exception) {
+          System.out.printf(exception.getMessage());
         }
 
         @Override
-        public void onSuccess(RequestManager.MyResponse<ArrayList<Component>> data) {
-          for (int i = 0; i < data.data.size(); i++) {
-            Component curr = data.data.get(i);
-//            if (resultMap.get(curr.componentName).equals(curr.hash)) {
-//              new Thread(new DownloadTask(
-//                      mContext,
-//                      curr.downloadUrl,
-//                      String.format("%s-%s.zip",curr.componentName,curr.hash),
-//                      downloadPath,
-//                      new DownloadProgressListener() {
-//                        @Override
-//                        public void onDownloadSize(int downloadedSize) {
-//                          System.out.println(downloadedSize);
-//                        }
-//
-//                        @Override
-//                        public void onDownloadFailure(Exception e) {
-//                          System.out.println("download failure");
-//                        }
-//
-//                        @Override
-//                        public void onDownLoadComplete(File file) {
-//                          System.out.println("download success");
-//                        }
-//                      })
-//              ).start();
-//            }
+        public void onSuccess(MyResponse<ArrayList<Component>> result) {
+          for (int i = 0; i < result.data.size(); i++) {
+            final Component newComponent = result.data.get(i);
+            final VersionInfo oldComponent = componentMap.get(newComponent.componentName);
+            // 如果hash不相同 且版本大于当前版本 下载新的bundle包
+            if (!oldComponent.hash.equals(newComponent.hash) && newComponent.version > oldComponent.version) {
+              new Thread(new DownloadTask(
+                      mContext,
+                      newComponent.downloadUrl,
+                      String.format("%s-%s.zip",newComponent.componentName,newComponent.hash),
+                      downloadPath,
+                      new DownloadProgressListener() {
+                        @Override
+                        public void onDownloadSize(int downloadedSize) {
+                        }
+
+                        @Override
+                        public void onDownloadFailure(Exception e) {
+                        }
+
+                        @Override
+                        public void onDownLoadComplete(File originFile) {
+                          File file = new File(String.format("%s/%s",downloadPath.getAbsolutePath(),newComponent.hash));
+                          try {
+                            originFile.renameTo(file);
+                            String dest = String.format("%s/%s/",downloadPath.getAbsolutePath(),newComponent.componentName);
+                            ZipFile zipFile = new ZipFile(file);
+                            zipFile.extractAll(dest);
+                            setupComponent(String.format("%s%s",dest,newComponent.hash),newComponent.version);
+                          } catch (Exception e) {
+                            e.printStackTrace();
+                          } finally {
+                            file.delete();
+                          }
+                        }
+                      })
+              ).start();
+            }
+          }
+        }
+
+        @Override
+        public Type getType(Boolean isFailure) {
+          if (!isFailure) {
+            return new TypeToken<MyResponse<ArrayList<Component>>>() {}.getType();
+          } else {
+            return new TypeToken<MyResponse<Object>>() {}.getType();
           }
         }
       }).request();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+
+  /**
+   * 应用下载完的组件
+   * @param componentDir
+   */
+  private void setupComponent(String componentDir,Integer version) {
+    try {
+      File settingJSONFile = new File(String.format("%s/%s",componentDir,"setting.json"));
+      String settingJSON = FileUtil.readFile(settingJSONFile);
+      ComponentSetting componentSetting = new Gson().fromJson(settingJSON, new TypeToken<ComponentSetting>() {}.getType());
+      String bundleFilePath = String.format("%s/%s", componentDir, componentSetting.bundleName);
+      if (FileUtil.fileExists(bundleFilePath)) {
+        bundleFilePath = bundleFilePath.replaceAll(this.getExternalFilesDir(null).getAbsolutePath() + "/","files://");
+        RNDBHelper.insertRow(RNDBHelper.createContentValues(
+                componentSetting.bundleName,
+                componentSetting.componentName,
+                version,
+                componentSetting.hash,
+                bundleFilePath,
+                componentSetting.timestamp
+        ));
+      }
     } catch (Exception e) {
       e.printStackTrace();
     }

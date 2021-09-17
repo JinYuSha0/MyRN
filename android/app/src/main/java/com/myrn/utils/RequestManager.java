@@ -5,10 +5,8 @@ import android.os.Build;
 import android.os.Handler;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.myrn.BuildConfig;
 
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -23,7 +21,6 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class RequestManager {
-    public enum RequestTypeEnum {GET,POST}
     private static RequestManager mInstance;
     private OkHttpClient mOkHttpClient;
     private Handler mOkHttpHandler;
@@ -52,7 +49,7 @@ public class RequestManager {
         mOkHttpHandler = new Handler(context.getMainLooper());
     }
 
-    public <T> Call Get(String actionUrl, HashMap<String, String> paramsMap, RequestCallBack<T> callBack) {
+    public <T, E> Call Get(String actionUrl, HashMap<String, String> paramsMap, RequestCallBack<T, E> callBack) {
         return requestGetByAsync(actionUrl,paramsMap,callBack);
     }
 
@@ -66,7 +63,7 @@ public class RequestManager {
         return builder;
     }
 
-    private <T> Call requestGetByAsync(String actionUrl, HashMap<String, String> paramsMap, final RequestCallBack<T> callBack) {
+    private <T, E> Call requestGetByAsync(String actionUrl, HashMap<String, String> paramsMap, final RequestCallBack<T, E> callBack) {
         StringBuilder tempParams = new StringBuilder();
         try {
             int pos = 0;
@@ -83,19 +80,17 @@ public class RequestManager {
             call.enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
-                    failureCallBack(new MyResponse<Object>(null,1001,false,e.getMessage()), callBack);
+                    failureCallBack(null,e, callBack);
                 }
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     if (response.isSuccessful()) {
-                        Type type = new TypeToken<MyResponse<T>>(){}.getType();
-                        MyResponse<T> res = new Gson().fromJson(response.body().string(), type);
+                        T res = new Gson().fromJson(response.body().string(), callBack.getType(false));
                         successCallBack(res, callBack);
                     } else {
-                        Type type = new TypeToken<MyResponse<Object>>(){}.getType();
-                        MyResponse<Object> res = new Gson().fromJson(response.body().string(), type);
-                        failureCallBack(res,callBack);
+                        E res = new Gson().fromJson(response.body().string(), callBack.getType(true));
+                        failureCallBack(res,null, callBack);
                     }
                 }
             });
@@ -107,7 +102,7 @@ public class RequestManager {
     }
 
 
-    private <T> void successCallBack(final MyResponse<T> result, final RequestCallBack<T> callBack) {
+    private <T, E> void successCallBack(final T result, final RequestCallBack<T, E> callBack) {
         mOkHttpHandler.post(new Runnable() {
             @Override
             public void run() {
@@ -118,34 +113,21 @@ public class RequestManager {
         });
     }
 
-    private <T> void failureCallBack(final MyResponse<Object> result, final RequestCallBack<T> callBack) {
+    private <T, E> void failureCallBack(final E result, Exception exception, final RequestCallBack<T, E> callBack) {
         mOkHttpHandler.post(new Runnable() {
             @Override
             public void run() {
                 if (callBack != null) {
-                    callBack.onFailure(result);
+                    callBack.onFailure(result, exception);
                 }
             }
         });
     }
 
 
-    public interface RequestCallBack<T> {
-        void onSuccess(MyResponse<T> data);
-        void onFailure(MyResponse<Object> error);
-    }
-
-    public class MyResponse<T> {
-        public T data;
-        public int code;
-        public boolean success;
-        public String message;
-
-        public MyResponse(T data, int code, boolean success, String message) {
-            this.data = data;
-            this.code = code;
-            this.success = success;
-            this.message = message;
-        }
+    public interface RequestCallBack<T, E> {
+        void onSuccess(T result);
+        void onFailure(E result, Exception exception);
+        Type getType(Boolean isFailure);
     }
 }

@@ -37,6 +37,8 @@ public class RNBundleLoader {
   public static void loadScript(Context context, CatalystInstance instance, String filePath, boolean isSync) {
     if (filePath.startsWith("assets://")) {
       loadScriptFromAsset(context, instance, filePath, isSync);
+    } else if (filePath.startsWith("files://")) {
+      loadScriptFromFile(context, instance, filePath, isSync);
     }
   }
 
@@ -50,5 +52,14 @@ public class RNBundleLoader {
     }
     instance.loadScriptFromAssets(context.getAssets(), source, isSync);
     sLoadedBundle.add(assetName);
+  }
+
+  public static void loadScriptFromFile(Context context, CatalystInstance instance, String filepath, boolean isSync) {
+    if (sLoadedBundle.contains(filepath)) {
+      return;
+    }
+    String realFilePath = filepath.replaceAll("files://",context.getExternalFilesDir(null).getAbsolutePath() + "/");
+    instance.loadScriptFromFile(realFilePath,realFilePath,isSync);
+    sLoadedBundle.add(filepath);
   }
 }

@@ -6,8 +6,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.myrn.iface.ReactNativeDB;
-
 import java.util.ArrayList;
 
 public class RNDBHelper extends SQLiteOpenHelper {
