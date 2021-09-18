@@ -36,16 +36,12 @@ const commonDep = (function (dependencies, whiteList, blackList) {
   // 白名单低优先级
   whiteList.forEach(regOrName => {
     if (typeof regOrName === 'string') {
-      list = list.concat(
-        Object.keys(dependencies)
-          .filter(name => name === regOrName)
-          .map(name => ({ [name]: dependencies[name] })),
-      );
+      list.push({ [String(regOrName)]: true });
     } else if (regOrName instanceof RegExp) {
       list = list.concat(
         Object.keys(dependencies)
           .filter(name => regOrName.test(name))
-          .map(name => ({ [name]: dependencies[name] })),
+          .map(name => ({ [name]: true })),
       );
     }
   });
@@ -64,7 +60,16 @@ const commonDep = (function (dependencies, whiteList, blackList) {
 
   list.forEach((obj, index) => {
     const [name, value] = Object.entries(obj)[0];
-    result[name] = value;
+    if (!name.includes('/')) {
+      result[name] = value;
+    } else {
+      const split = name.split('/');
+      split.reduce((a, b, index) => {
+        const level = Object.create(null);
+        a[b] = index === split.length - 1 ? true : level;
+        return level;
+      }, result);
+    }
   });
 
   return result;
@@ -74,15 +79,9 @@ const commonDep = (function (dependencies, whiteList, blackList) {
   bundleSplitConfig.blackList,
 );
 
-const code = genRequiredCode(commonDep);
-const codeDirPath = path.resolve(__dirname, '../temp');
-delDir(codeDirPath);
-const codeFilePath = path.resolve(
-  createDirIfNotExists(codeDirPath),
-  `.${Math.random().toString(36).split('.')[1]}.js`,
-);
-fs.writeFileSync(codeFilePath, code);
 const sourceMapPath = path.resolve(__dirname, '../sourceMap');
+const nodeModulePath = path.join(process.cwd(), 'node_modules');
+const codeDirPath = path.resolve(__dirname, '../temp');
 
 let moduleIdMap = Object.create(null);
 const platform = args['platform'] || 'android';
@@ -94,27 +93,46 @@ const bundleOutputFilePath = path.resolve(
   outputBundleFileName,
 );
 const [p, resolve] = deffered();
+const sep = require('path').sep;
+const detectFilter = path => {
+  let filter = false;
+  if (path.includes(nodeModulePath)) {
+    // 外部依赖
+    return true;
+  }
+  return filter;
+};
 const bundle = async platform => {
   const config = await loadMetroConfig(ctx);
+  config.serializer.processModuleFilter = function (module) {
+    const { path } = module;
+    return detectFilter(path);
+  };
   config.serializer.createModuleIdFactory = function () {
     return function (path) {
-      const id = getModuleId(genPath(path));
-      moduleIdMap[genPath(path)] = {
-        id,
-        hash: genFileHash(path),
-      };
-      return id;
+      if (detectFilter(path)) {
+        const id = getModuleId(genPath(path));
+        moduleIdMap[genPath(path)] = {
+          id,
+          hash: genFileHash(path),
+        };
+        return id;
+      }
+      return null;
     };
   };
   const server = new Server(config);
   try {
     const commonRequestOpts = {
-      entryFile: codeFilePath,
+      entryFile: path.join(process.cwd(), 'index.js'),
       dev: false,
       minify: true,
       platform,
     };
     const bundle = await output.build(server, commonRequestOpts);
+    bundle.code =
+      `var __BUNDLE_START_TIME__=this.nativePerformanceNow?nativePerformanceNow():Date.now(),__DEV__=false,process=this.process||{},__METRO_GLOBAL_PREFIX__='';process.env=process.env||{};process.env.NODE_ENV=process.env.NODE_ENV||"production";\r` +
+      bundle.code;
     output.save(
       bundle,
       {
@@ -151,7 +169,6 @@ const bundle = async platform => {
       ),
     );
   } finally {
-    fs.unlinkSync(codeFilePath);
     server.end();
     resolve();
   }
@@ -169,6 +186,7 @@ p.then(isBuz => {
   if (isBuz) {
     startId = Object.keys(require(getNewestSourceMap())).length;
   }
+  delDir(codeDirPath);
   analysisRegisterComponent().then(res => {
     for (let i = 0; i < Array.from(res.keys()).length; i++) {
       const component = Array.from(res.keys())[i];
