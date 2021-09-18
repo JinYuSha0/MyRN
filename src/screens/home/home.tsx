@@ -1,19 +1,26 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
+import useSubscribeNative from '@hooks/useSubscribeNative';
 import { View, Text, Button, Card } from 'react-native-ui-lib';
-import { StyleSheet, ScrollView } from 'react-native';
+import { StyleSheet, ScrollView, ToastAndroid } from 'react-native';
 import { HomeRouteName, HomeScreenProps } from './types';
-import { ScreenHeight, ScreenWidth } from '@src/utils/constant';
+import { EventName, ScreenHeight, ScreenWidth } from '@src/utils/constant';
 import { openFromAssets, getAllComponent } from '@utils/rnBridge';
 import { Component } from '@src/types/bridge';
 
 const Home: React.FC<HomeScreenProps<HomeRouteName.Home>> = props => {
   const [components, setComponents] = useState<Component[]>([]);
-  useEffect(() => {
-    getAllComponent().then(components => {
-      setComponents(components);
-      console.log(components);
-    });
+  const getData = useCallback(async () => {
+    const components = await getAllComponent();
+    setComponents(components);
+    console.log(components);
   }, []);
+  useEffect(() => {
+    getData();
+  }, []);
+  useSubscribeNative([EventName.CHECK_UPDATE_DOWNLOAD_NEWS_APPLY], () => {
+    getData();
+    ToastAndroid.show('更新成功', 3000);
+  });
   return (
     <ScrollView
       style={styles.container}

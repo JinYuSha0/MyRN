@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 
@@ -23,6 +24,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.myrn.utils.PhoneInfo;
 import com.myrn.utils.RNConvert;
 
@@ -58,7 +61,7 @@ public class RNBridge extends ReactContextBaseJavaModule {
     WritableArray array = Arguments.createArray();
     ArrayList<RNDBHelper.Result> results = RNDBHelper.selectAll();
     for (RNDBHelper.Result result : results) {
-      array.pushMap(RNConvert.obj2Map(result));
+      array.pushMap(RNConvert.obj2WritableMap(result));
     }
     promise.resolve(array);
   }
@@ -79,6 +82,20 @@ public class RNBridge extends ReactContextBaseJavaModule {
     bundle.putInt("statusBarMode", statusBarMode == null ? 0 : statusBarMode);
     bundle.putString("bundleName", bundleName);
     return bundle;
+  }
+
+  public static void sendEvent(String eventName, Object eventData) {
+    ReactContext reactContext = RNApplication.mReactNativeHost.getReactInstanceManager().getCurrentReactContext();
+    if (!RNConvert.isBaseType(eventData)) {
+      eventData = RNConvert.obj2WritableMap(eventData);
+    }
+    if (reactContext != null) {
+      reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName,eventData);
+    }
+  }
+
+  public static void sendEventInner(String eventName, Object eventData) {
+    sendEvent(PREFIX+eventName,eventData);
   }
 
   public static Activity getActivity () {

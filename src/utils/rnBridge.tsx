@@ -1,7 +1,9 @@
-import { NativeModules } from 'react-native';
+import { NativeModules, NativeEventEmitter } from 'react-native';
 import { Component } from '@src/types/bridge';
 
 export const { RNBridge } = NativeModules;
+
+export const EventEmitter = new NativeEventEmitter(RNBridge);
 
 export function log(content: string) {
   RNBridge?.log(content);

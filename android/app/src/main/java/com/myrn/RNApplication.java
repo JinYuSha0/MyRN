@@ -33,6 +33,7 @@ import java.lang.reflect.InvocationTargetException;
 import com.facebook.react.bridge.JSIModulePackage;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.myrn.constant.EventName;
 import com.myrn.constant.StorageKey;
 import com.myrn.entity.Component;
 import com.myrn.entity.ComponentSetting;
@@ -243,19 +244,28 @@ public class RNApplication extends Application implements ReactApplication {
           componentMap.put(curr.ComponentName, info);
         }
       }
+      RNBridge.sendEventInner(EventName.CHECK_UPDATE_START, null);
       RequestManager.getInstance(this).Get("/rn/checkUpdate", new HashMap<String, String>(), new RequestManager.RequestCallBack<MyResponse<ArrayList<Component>>, MyResponse<Object>>() {
         @Override
         public void onFailure(MyResponse<Object> error, Exception exception) {
-          System.out.printf(exception.getMessage());
+          String cause;
+          if (exception != null) {
+            cause = exception.getMessage();
+          } else {
+            cause = error.message;
+          }
+          RNBridge.sendEventInner(EventName.CHECK_UPDATE_FAILURE, cause);
         }
 
         @Override
         public void onSuccess(MyResponse<ArrayList<Component>> result) {
+          RNBridge.sendEventInner(EventName.CHECK_UPDATE_SUCCESS, result);
           for (int i = 0; i < result.data.size(); i++) {
             final Component newComponent = result.data.get(i);
             final VersionInfo oldComponent = componentMap.get(newComponent.componentName);
             // 如果hash不相同 且版本大于当前版本 下载新的bundle包
             if (!oldComponent.hash.equals(newComponent.hash) && newComponent.version > oldComponent.version) {
+              RNBridge.sendEventInner(EventName.CHECK_UPDATE_DOWNLOAD_NEWS,null);
               new Thread(new DownloadTask(
                       mContext,
                       newComponent.downloadUrl,
@@ -268,6 +278,7 @@ public class RNApplication extends Application implements ReactApplication {
 
                         @Override
                         public void onDownloadFailure(Exception e) {
+                          RNBridge.sendEventInner(EventName.CHECK_UPDATE_DOWNLOAD_NEWS_FAILURE,null);
                         }
 
                         @Override
@@ -279,6 +290,7 @@ public class RNApplication extends Application implements ReactApplication {
                             ZipFile zipFile = new ZipFile(file);
                             zipFile.extractAll(dest);
                             setupComponent(String.format("%s%s",dest,newComponent.hash),newComponent.version);
+                            RNBridge.sendEventInner(EventName.CHECK_UPDATE_DOWNLOAD_NEWS_SUCCESS,null);
                           } catch (Exception e) {
                             e.printStackTrace();
                           } finally {
@@ -317,15 +329,18 @@ public class RNApplication extends Application implements ReactApplication {
       ComponentSetting componentSetting = new Gson().fromJson(settingJSON, new TypeToken<ComponentSetting>() {}.getType());
       String bundleFilePath = String.format("%s/%s", componentDir, componentSetting.bundleName);
       if (FileUtil.fileExists(bundleFilePath)) {
-        bundleFilePath = bundleFilePath.replaceAll(this.getExternalFilesDir(null).getAbsolutePath() + "/","files://");
+        String saveBundleFilePath = bundleFilePath.replaceAll(this.getExternalFilesDir(null).getAbsolutePath() + "/","files://");
         RNDBHelper.insertRow(RNDBHelper.createContentValues(
                 componentSetting.bundleName,
                 componentSetting.componentName,
                 version,
                 componentSetting.hash,
-                bundleFilePath,
+                saveBundleFilePath,
                 componentSetting.timestamp
         ));
+        // 立即应用新模块
+        RNBundleLoader.loadScriptFromFile(this,RNBundleLoader.getCatalystInstance(mReactNativeHost),bundleFilePath,false);
+        RNBridge.sendEventInner(EventName.CHECK_UPDATE_DOWNLOAD_NEWS_APPLY,null);
       }
     } catch (Exception e) {
       e.printStackTrace();
