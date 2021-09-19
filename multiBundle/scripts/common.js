@@ -29,56 +29,6 @@ const ctx = loadConfig();
 const rootPath = ctx.root;
 const genPath = genPathFactory(rootPath);
 
-const commonDep = (function (dependencies, whiteList, blackList) {
-  let list = [];
-  const result = Object.create(null);
-
-  // 白名单低优先级
-  whiteList.forEach(regOrName => {
-    if (typeof regOrName === 'string') {
-      list.push({ [String(regOrName)]: true });
-    } else if (regOrName instanceof RegExp) {
-      list = list.concat(
-        Object.keys(dependencies)
-          .filter(name => regOrName.test(name))
-          .map(name => ({ [name]: true })),
-      );
-    }
-  });
-
-  // 黑名单高优先级
-  blackList.forEach(regOrName => {
-    list.forEach((obj, index) => {
-      const name = Object.entries(obj)[0][0];
-      if (typeof regOrName === 'string') {
-        regOrName === name && list.splice(index, 1);
-      } else if (regOrName instanceof RegExp) {
-        regOrName.test(name) && list.splice(index, 1);
-      }
-    });
-  });
-
-  list.forEach((obj, index) => {
-    const [name, value] = Object.entries(obj)[0];
-    if (!name.includes('/')) {
-      result[name] = value;
-    } else {
-      const split = name.split('/');
-      split.reduce((a, b, index) => {
-        const level = Object.create(null);
-        a[b] = index === split.length - 1 ? true : level;
-        return level;
-      }, result);
-    }
-  });
-
-  return result;
-})(
-  bundleSplitConfig.packagejson.dependencies,
-  bundleSplitConfig.whiteList,
-  bundleSplitConfig.blackList,
-);
-
 const sourceMapPath = path.resolve(__dirname, '../sourceMap');
 const nodeModulePath = path.join(process.cwd(), 'node_modules');
 const codeDirPath = path.resolve(__dirname, '../temp');
@@ -94,11 +44,24 @@ const bundleOutputFilePath = path.resolve(
 );
 const [p, resolve] = deffered();
 const sep = require('path').sep;
+const whiteList = bundleSplitConfig.whiteList.map(i =>
+  path.join(process.cwd(), i),
+);
 const detectFilter = path => {
   let filter = false;
   if (path.includes(nodeModulePath)) {
     // 外部依赖
     return true;
+  } else {
+    if (bundleSplitConfig.blackList.includes(path)) return false;
+    try {
+      whiteList.forEach(item => {
+        if (path.startsWith(item)) {
+          filter = true;
+          throw new Error();
+        }
+      });
+    } catch (e) {}
   }
   return filter;
 };
