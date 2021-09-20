@@ -28,7 +28,8 @@
     "react-native-safe-area-context": "^3.3.0",
     "react-native-screens": "^3.6.0",
     "react-native-svg": "^12.1.1",
-    "react-native-ui-lib": "^5.30.0"
+    "react-native-ui-lib": "^5.30.0",
+    "rn-multi-bundle": "^0.0.3"
   },
   "devDependencies": {
     "@babel/core": "^7.15.0",

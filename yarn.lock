@@ -2489,6 +2489,11 @@ commander@^2.19.0:
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.20.3.tgz#fd485e84c03eb4881c20722ba48035e8531aeb33"
   integrity sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==
 
+commander@^8.2.0:
+  version "8.2.0"
+  resolved "https://registry.nlark.com/commander/download/commander-8.2.0.tgz?cache=0&sync_timestamp=1631257318022&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fcommander%2Fdownload%2Fcommander-8.2.0.tgz#37fe2bde301d87d47a53adeff8b5915db1381ca8"
+  integrity sha1-N/4r3jAdh9R6U63v+LWRXbE4HKg=
+
 commander@~2.13.0:
   version "2.13.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.13.0.tgz#6964bca67685df7c1f1430c584f07d7597885b9c"
@@ -6551,6 +6556,13 @@ rimraf@~2.6.2:
   integrity sha512-mwqeW5XsA2qAejG46gYdENaxXjx9onRNCfn7L0duuP4hCuTIi/QO7PDK07KJfp1d+izWPrzEJDcSqBa0OZQriA==
   dependencies:
     glob "^7.1.3"
+
+rn-multi-bundle@^0.0.3:
+  version "0.0.3"
+  resolved "https://registry.npmjs.org/rn-multi-bundle/-/rn-multi-bundle-0.0.3.tgz#32bd3a277921c9cea5c1427c02eb5290480e99d6"
+  integrity sha512-uftXmORc8vALwDif1H7OjUBCr2xw5kViWPc2woUaJhrWw/LaCseNwStXjMwGHsArWlq4aqomiwSiD/lQ2KRg1w==
+  dependencies:
+    commander "^8.2.0"
 
 rsvp@^4.8.4:
   version "4.8.5"
