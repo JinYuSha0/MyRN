@@ -87,7 +87,15 @@ public class RNBridge extends ReactContextBaseJavaModule {
   public static void sendEvent(String eventName, Object eventData) {
     ReactContext reactContext = RNApplication.mReactNativeHost.getReactInstanceManager().getCurrentReactContext();
     if (!RNConvert.isBaseType(eventData)) {
-      eventData = RNConvert.obj2WritableMap(eventData);
+      if (eventData instanceof HashMap) {
+        eventData = RNConvert.obj2WritableMap(eventData);
+      } else if (eventData instanceof ArrayList) {
+        eventData = RNConvert.array2WritableArray((ArrayList) eventData);
+      } else {
+        return;
+      }
+    } else {
+      eventData = RNConvert.checkBaseType(eventData);
     }
     if (reactContext != null) {
       reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName,eventData);

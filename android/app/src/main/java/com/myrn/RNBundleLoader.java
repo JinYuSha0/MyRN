@@ -55,11 +55,14 @@ public class RNBundleLoader {
   }
 
   public static void loadScriptFromFile(Context context, CatalystInstance instance, String filepath, boolean isSync) {
-    if (sLoadedBundle.contains(filepath)) {
+    String realFilePath = filepath;
+    if (filepath.startsWith("files://")) {
+      realFilePath = filepath.replaceAll("files://",context.getExternalFilesDir(null).getAbsolutePath() + "/");
+    }
+    if (sLoadedBundle.contains(realFilePath)) {
       return;
     }
-    String realFilePath = filepath.replaceAll("files://",context.getExternalFilesDir(null).getAbsolutePath() + "/");
     instance.loadScriptFromFile(realFilePath,realFilePath,isSync);
-    sLoadedBundle.add(filepath);
+    sLoadedBundle.add(realFilePath);
   }
 }

@@ -30,16 +30,26 @@ public abstract class RNActivity extends androidx.fragment.app.FragmentActivity 
   private RNActivityDelegate mDelegate;
   private static ArrayList<RNActivity> mActivityList = new ArrayList();
 
-  synchronized public static Activity getActivity() {
+  synchronized public static RNActivity getActivity() {
     if (mActivityList.size() > 0) {
       for (int i = mActivityList.size() - 1; i >= 0; i--) {
-        Activity cActivity = mActivityList.get(i);
+        RNActivity cActivity = mActivityList.get(i);
         if (!cActivity.isFinishing()) {
           return cActivity;
         }
       }
     }
     return null;
+  }
+
+  synchronized public static Boolean isExistsModule(String moduleName) {
+    for (int i = mActivityList.size() - 1; i >= 0; i--) {
+      RNActivity cActivity = mActivityList.get(i);
+      if (moduleName.equals(cActivity.getBundle().moduleName)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   protected RNActivity() {

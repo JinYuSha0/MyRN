@@ -90,4 +90,13 @@ public class RNConvert {
     }
     return isBase;
   }
+
+  public static Object checkBaseType(Object value) {
+    if (value instanceof Float) {
+      return (Double) value;
+    } else if (value instanceof Long) {
+      return String.valueOf(value);
+    }
+    return value;
+  }
 }

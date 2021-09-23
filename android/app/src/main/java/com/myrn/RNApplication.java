@@ -64,6 +64,7 @@ public class RNApplication extends Application implements ReactApplication {
 
   public static ReactNativeHost mReactNativeHost;
   public static final Boolean isDebug = false;
+  private Boolean isBackGround = false;
 
   public static final ReactNativeHost getReactNativeHost(Boolean isDebug, Application application, @Nullable Activity activity) {
     if (mReactNativeHost == null) {
@@ -150,7 +151,10 @@ public class RNApplication extends Application implements ReactApplication {
   private ActivityLifecycleCallbacks activityLifecycleCallbacks = new ActivityLifecycleCallbacks() {
     @Override
     public void onActivityStarted(@NonNull Activity activity) {
-      checkUpdate();
+      if (isBackGround) {
+        isBackGround = false;
+        checkUpdate();
+      }
     }
 
     @Override
@@ -196,6 +200,14 @@ public class RNApplication extends Application implements ReactApplication {
     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
   }
 
+  @Override
+  public void onTrimMemory(int level) {
+    super.onTrimMemory(level);
+    if (level == TRIM_MEMORY_UI_HIDDEN) {
+      isBackGround = true;
+    }
+  }
+
   /**
    * 初始化数据库
    */
@@ -232,6 +244,8 @@ public class RNApplication extends Application implements ReactApplication {
    * 检查是否有新的模块需要下载
    */
   private void checkUpdate() {
+    // debug
+    if (mReactNativeHost != null && mReactNativeHost.getUseDeveloperSupport()) return;
     try {
       final File downloadPath = this.getExternalFilesDir(null);
       final Context mContext = this;
@@ -278,7 +292,7 @@ public class RNApplication extends Application implements ReactApplication {
 
                         @Override
                         public void onDownloadFailure(Exception e) {
-                          RNBridge.sendEventInner(EventName.CHECK_UPDATE_DOWNLOAD_NEWS_FAILURE,null);
+                          RNBridge.sendEventInner(EventName.CHECK_UPDATE_DOWNLOAD_NEWS_FAILURE,e.getMessage());
                         }
 
                         @Override
@@ -339,7 +353,9 @@ public class RNApplication extends Application implements ReactApplication {
                 componentSetting.timestamp
         ));
         // 立即应用新模块
-        RNBundleLoader.loadScriptFromFile(this,RNBundleLoader.getCatalystInstance(mReactNativeHost),bundleFilePath,false);
+        if (!RNActivity.isExistsModule(componentSetting.componentName)) {
+          RNBundleLoader.loadScriptFromFile(this,RNBundleLoader.getCatalystInstance(mReactNativeHost),bundleFilePath,false);
+        }
         RNBridge.sendEventInner(EventName.CHECK_UPDATE_DOWNLOAD_NEWS_APPLY,null);
       }
     } catch (Exception e) {
