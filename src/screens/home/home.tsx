@@ -12,7 +12,6 @@ const Home: React.FC<HomeScreenProps<HomeRouteName.Home>> = props => {
   const getData = useCallback(async () => {
     const components = await getAllComponent();
     setComponents(components);
-    console.log(components);
   }, []);
   useEffect(() => {
     getData();

@@ -7,6 +7,7 @@ export const EventEmitter = new NativeEventEmitter(RNBridge);
 
 export function log(content: string) {
   RNBridge?.log(content);
+  console.log('[MY_RN_LOG]', content);
 }
 
 export enum StatusBarMode {

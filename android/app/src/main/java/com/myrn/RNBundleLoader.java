@@ -8,6 +8,7 @@ import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.ReactContext;
+import com.myrn.utils.FileUtil;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -37,7 +38,7 @@ public class RNBundleLoader {
   public static void loadScript(Context context, CatalystInstance instance, String filePath, boolean isSync) {
     if (filePath.startsWith("assets://")) {
       loadScriptFromAsset(context, instance, filePath, isSync);
-    } else if (filePath.startsWith("files://")) {
+    } else if (filePath.startsWith("file://")) {
       loadScriptFromFile(context, instance, filePath, isSync);
     }
   }
@@ -56,8 +57,8 @@ public class RNBundleLoader {
 
   public static void loadScriptFromFile(Context context, CatalystInstance instance, String filepath, boolean isSync) {
     String realFilePath = filepath;
-    if (filepath.startsWith("files://")) {
-      realFilePath = filepath.replaceAll("files://",context.getExternalFilesDir(null).getAbsolutePath() + "/");
+    if (filepath.startsWith("file://")) {
+      realFilePath = filepath.replaceAll("file://", FileUtil.getExternalFilesDir(context));
     }
     if (sLoadedBundle.contains(realFilePath)) {
       return;

@@ -19,6 +19,7 @@ import com.facebook.react.modules.core.PermissionAwareActivity;
 import com.facebook.react.modules.core.PermissionListener;
 import com.jaeger.library.StatusBarUtil;
 import com.myrn.constant.StatusBar;
+import com.myrn.utils.FileUtil;
 import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
 
 import java.util.ArrayList;
@@ -139,7 +140,7 @@ public abstract class RNActivity extends androidx.fragment.app.FragmentActivity 
       // 未曾加载的模块
     } else {
       RNBundleLoader.loadScript(getApplicationContext(),instance,result.FilePath,false);
-      loadScriptListener.onLoadComplete(true,null);
+      loadScriptListener.onLoadComplete(true,result.FilePath);
     }
   }
 

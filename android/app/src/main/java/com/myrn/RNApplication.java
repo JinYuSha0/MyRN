@@ -343,7 +343,7 @@ public class RNApplication extends Application implements ReactApplication {
       ComponentSetting componentSetting = new Gson().fromJson(settingJSON, new TypeToken<ComponentSetting>() {}.getType());
       String bundleFilePath = String.format("%s/%s", componentDir, componentSetting.bundleName);
       if (FileUtil.fileExists(bundleFilePath)) {
-        String saveBundleFilePath = bundleFilePath.replaceAll(this.getExternalFilesDir(null).getAbsolutePath() + "/","files://");
+        String saveBundleFilePath = bundleFilePath.replaceAll(this.getExternalFilesDir(null).getAbsolutePath() + "/","file://");
         RNDBHelper.insertRow(RNDBHelper.createContentValues(
                 componentSetting.bundleName,
                 componentSetting.componentName,

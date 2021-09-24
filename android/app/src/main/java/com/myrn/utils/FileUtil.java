@@ -54,4 +54,8 @@ public class FileUtil {
     }
     return false;
   }
+
+  public static String getExternalFilesDir(Context context) {
+    return context.getExternalFilesDir(null).getAbsolutePath() + "/";
+  }
 }
