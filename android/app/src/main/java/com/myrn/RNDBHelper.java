@@ -20,8 +20,7 @@ public class RNDBHelper extends SQLiteOpenHelper {
 
   @Override
   public void onCreate(SQLiteDatabase sqLiteDatabase) {
-    String sql = "create table if not exists " + TABLE_NAME + " (BundleName varchar(100), ComponentName varchar(100), Version interge, Hash varchar(100), Filepath varchar(100), PublishTime interge, InstallTime integer, primary key(BundleName, Version))";
-    sqLiteDatabase.execSQL(sql);
+
   }
 
   @Override

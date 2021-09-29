@@ -6,7 +6,6 @@ import {
   HomeNatigatorProps,
   HomeRouteName,
 } from '@screens/home/types';
-import { useHeaderHeight } from '@react-navigation/elements';
 
 const Stack = createStackNavigator<HomeParamList>();
 

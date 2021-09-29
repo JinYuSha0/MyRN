@@ -6,8 +6,8 @@ import { ScreenHeight, ScreenWidth } from '@src/utils/constant';
 const Test: React.FC<{}> = props => {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>This is assets test!</Text>
-      {/* <Image style={styles.image} source={require('@assets/images/bg2.jpeg')} /> */}
+      <Text style={styles.text}>Update success!!!</Text>
+      <Image style={styles.image} source={require('@assets/images/bg2.jpeg')} />
     </View>
   );
 };
