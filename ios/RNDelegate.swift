@@ -77,6 +77,5 @@ class RNDelegate: UIResponder, UIApplicationDelegate, RCTBridgeDelegate {
         debugPrint("InitDB failure")
       }
     }
-    RNDBHelper.manager.selectAll()
   }
 }

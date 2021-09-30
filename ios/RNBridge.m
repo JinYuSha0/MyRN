@@ -9,4 +9,6 @@
 
 @interface RCT_EXTERN_MODULE(RNBridge, NSObject)
 
+RCT_EXTERN_METHOD(getAllComponent: (RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+
 @end

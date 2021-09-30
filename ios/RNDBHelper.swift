@@ -61,17 +61,33 @@ class RNDBHelper: NSObject {
       InstallTime_column <- row.InstallTime
     )
     if (try? getDB().run(insert)) != nil {
-      debugPrint("Insert success")
+      print("Insert success")
     } else {
-      debugPrint("Insert failure")
+      print("Insert failure")
     }
   }
   
-  func selectAll() -> [ComponentModel]? {
-    let sql = "SELECT * FROM \(TableName) a WHERE Version = (SELECT MAX(b.Version) FROM \(TableName) b WHERE b.BundleName = a.BundleName) ORDER BY a.BundleName"
-    let result = try? getDB().execute(sql)
-    print(result)
-    return nil
+  func selectAll() -> [ComponentModel] {
+    var result: [ComponentModel] = [ComponentModel]()
+    do {
+      let sql = "SELECT ComponentName, BundleName, Version, Hash, Filepath, PublishTime, InstallTime FROM \(TableName) a WHERE Version = (SELECT MAX(b.Version) FROM \(TableName) b WHERE b.BundleName = a.BundleName) ORDER BY a.BundleName"
+      for row in try getDB().prepare(sql) {
+        result.append(
+          ComponentModel.init(
+            ComponentName: row[0] as? String,
+            BundleName: row[1] as! String,
+            Version: Int("\(row[2] ?? 0)")!,
+            Hash: row[3] as! String,
+            Filepath: row[4] as! String,
+            PublishTime: row[5] as! Int64,
+            InstallTime: row[6] as! Int64
+          )
+        )
+      }
+    } catch {
+      print(error)
+    }
+    return result
   }
   
 }

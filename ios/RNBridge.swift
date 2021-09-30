@@ -15,4 +15,11 @@ class RNBridge: NSObject {
     return ["model": UIDevice.modelName, "prefix": RNBridge.PREFIX + "_"]
   }
 
+  @objc(getAllComponent:rejecter:)
+  func getAllComponent(_ resolve: RCTPromiseResolveBlock, rejecter reject:RCTPromiseRejectBlock) -> Void {
+    let components = RNDBHelper.manager.selectAll()
+    let aaa = RNConvert.convert(components)
+    resolve(aaa)
+  }
+  
 }

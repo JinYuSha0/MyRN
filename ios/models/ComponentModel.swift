@@ -5,7 +5,7 @@
 //  Created by Soul on 2021/9/29.
 //
 
-struct ComponentModel {
+class ComponentModel: Codable {
   var ComponentName: String?
   var BundleName: String
   var Version: Int

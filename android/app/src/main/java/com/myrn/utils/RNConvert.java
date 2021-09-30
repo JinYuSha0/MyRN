@@ -77,7 +77,7 @@ public class RNConvert {
     return writableArray;
   }
 
-  public static boolean isBaseType(Object value) {
+  private static boolean isBaseType(Object value) {
     if (value == null) return true;
     Boolean isBase = true;
     if (value instanceof String) {
@@ -91,12 +91,24 @@ public class RNConvert {
     return isBase;
   }
 
-  public static Object checkBaseType(Object value) {
+  private static Object compatible(Object value) {
     if (value instanceof Float) {
       return (Double) value;
     } else if (value instanceof Long) {
       return String.valueOf(value);
     }
     return value;
+  }
+
+  public static Object convert(Object obj) {
+    if (isBaseType(obj)) {
+      return compatible(obj);
+    } else {
+      if (obj instanceof ArrayList) {
+        return array2WritableArray((ArrayList) obj);
+      } else {
+        return obj2WritableMap(obj);
+      }
+    }
   }
 }

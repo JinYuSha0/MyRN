@@ -20,17 +20,17 @@ export enum StatusBarMode {
 }
 
 /**
- * 从assets中加载模块
+ * 打开指定模块
  * @param bundlePath
  * @param moduleName
  * @param statusBarMode
  */
-export function openFromAssets(
+export function openComponent(
   bundlePath: string,
   moduleName: string,
   statusBarMode: StatusBarMode = StatusBarMode.LIGHT,
 ) {
-  RNBridge?.openFromAssets(bundlePath, moduleName, statusBarMode);
+  RNBridge?.openComponent(bundlePath, moduleName, statusBarMode);
 }
 
 /**

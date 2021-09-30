@@ -61,13 +61,13 @@ public class RNBridge extends ReactContextBaseJavaModule {
     WritableArray array = Arguments.createArray();
     ArrayList<RNDBHelper.Result> results = RNDBHelper.selectAll();
     for (RNDBHelper.Result result : results) {
-      array.pushMap(RNConvert.obj2WritableMap(result));
+      array.pushMap((WritableMap) RNConvert.convert(result));
     }
     promise.resolve(array);
   }
 
   @ReactMethod
-  public void openFromAssets(String bundleName, String moduleName, @Nullable Integer statusBarMode) {
+  public void openComponent(String bundleName, String moduleName, @Nullable Integer statusBarMode) {
     Activity activity = getActivity();
     if (activity == null) return;
     Intent intent = new Intent(activity, MainActivity.class);
@@ -86,17 +86,7 @@ public class RNBridge extends ReactContextBaseJavaModule {
 
   public static void sendEvent(String eventName, Object eventData) {
     ReactContext reactContext = RNApplication.mReactNativeHost.getReactInstanceManager().getCurrentReactContext();
-    if (!RNConvert.isBaseType(eventData)) {
-      if (eventData instanceof HashMap) {
-        eventData = RNConvert.obj2WritableMap(eventData);
-      } else if (eventData instanceof ArrayList) {
-        eventData = RNConvert.array2WritableArray((ArrayList) eventData);
-      } else {
-        return;
-      }
-    } else {
-      eventData = RNConvert.checkBaseType(eventData);
-    }
+    eventData = RNConvert.convert(eventData);
     if (reactContext != null) {
       reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName,eventData);
     }

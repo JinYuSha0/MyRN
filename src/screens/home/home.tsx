@@ -4,7 +4,7 @@ import { View, Text, Button, Card } from 'react-native-ui-lib';
 import { StyleSheet, ScrollView, ToastAndroid } from 'react-native';
 import { HomeRouteName, HomeScreenProps } from './types';
 import { EventName, ScreenHeight, ScreenWidth } from '@src/utils/constant';
-import { openFromAssets, getAllComponent } from '@utils/rnBridge';
+import { openComponent, getAllComponent } from '@utils/rnBridge';
 import { Component } from '@src/types/bridge';
 
 const Home: React.FC<HomeScreenProps<HomeRouteName.Home>> = props => {
@@ -37,7 +37,7 @@ const Home: React.FC<HomeScreenProps<HomeRouteName.Home>> = props => {
               marginT-20
               disabled={!component.ComponentName}
               onPress={() =>
-                openFromAssets(component.BundleName, component.ComponentName)
+                openComponent(component.BundleName, component.ComponentName)
               }
               label={'JUMP'}
             />
