@@ -16,4 +16,6 @@ RCT_EXTERN_METHOD(registerEvent: (NSString)eventName resolver:(RCTPromiseResolve
 
 RCT_EXTERN_METHOD(getAllComponent: (RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 
+RCT_EXTERN_METHOD(openComponent: (NSString)bundlePath moduleName:(NSString)moduleName)
+
 @end

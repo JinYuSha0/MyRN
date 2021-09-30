@@ -56,7 +56,7 @@ class RNDBHelper: NSObject {
       ComponentName_column <- row.ComponentName,
       Version_column <- row.Version,
       Hash_column <- row.Hash,
-      Filepath_column <- row.Filepath,
+      Filepath_column <- row.FilePath,
       PublishTime_column <- row.PublishTime,
       InstallTime_column <- row.InstallTime
     )
@@ -78,7 +78,7 @@ class RNDBHelper: NSObject {
             BundleName: row[1] as! String,
             Version: Int("\(row[2] ?? 0)")!,
             Hash: row[3] as! String,
-            Filepath: row[4] as! String,
+            FilePath: row[4] as! String,
             PublishTime: row[5] as! Int64,
             InstallTime: row[6] as! Int64
           )

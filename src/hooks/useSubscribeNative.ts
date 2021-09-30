@@ -24,7 +24,7 @@ export default function useSubscribeNative(
 
     return () => {
       eventListeners.current.forEach(eventListener => {
-        if (eventListener && !!eventListener.remove) {
+        if (eventListener && typeof eventListener.remove === 'function') {
           eventListener.remove()
         } else {
           EventEmitter.removeSubscription(eventListener);

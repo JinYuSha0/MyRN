@@ -5,9 +5,12 @@
 //  Created by Soul on 2021/9/28.
 //
 
+import React
 
 @UIApplicationMain
-class RNDelegate: UIResponder, UIApplicationDelegate, RCTBridgeDelegate {
+class RNDelegate: UIResponder, UIApplicationDelegate {
+  // 开启关闭调试
+  let DEBUG: Bool = false
   var window: UIWindow?
   var bridge: RCTBridge!
   
@@ -25,31 +28,25 @@ class RNDelegate: UIResponder, UIApplicationDelegate, RCTBridgeDelegate {
     #if FB_SONARKIT_ENABLED
       InitializeFlipper(application)
     #endif
-
-    bridge = RCTBridge(delegate: self, launchOptions: launchOptions)
-    let rootView = RCTRootView(bridge: bridge, moduleName: "Home", initialProperties: nil)
-
-    if #available(iOS 13.0, *) {
-      rootView.backgroundColor = UIColor.systemBackground
+    
+    RCTDevSettingsSetEnabled(DEBUG)
+    RCTDevLoadingView.setEnabled(DEBUG)
+    
+    var commonBundleUrl: URL
+    
+    if DEBUG {
+      commonBundleUrl = RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: "index", fallbackResource: nil)
     } else {
-      rootView.backgroundColor = UIColor.white
+      commonBundleUrl = Bundle.main.url(forResource: "bundle/common.ios", withExtension: "bundle")!
     }
 
-    window = UIWindow(frame: UIScreen.main.bounds)
-    let rootViewController = UIViewController()
-    rootViewController.view = rootView
-    window?.rootViewController = rootViewController
-    window?.makeKeyAndVisible()
+    bridge = RCTBridge.init(bundleURL: commonBundleUrl, moduleProvider: nil, launchOptions: launchOptions)
+    
+    initView()
+    
     initDB()
+    
     return true
-  }
-
-  func sourceURL(for bridge: RCTBridge?) -> URL? {
-    #if DEBUG
-      return RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: "index", fallbackResource: nil)
-    #else
-      return Bundle.main.url(forResource: "main", withExtension: "jsbundle")
-    #endif
   }
   
   func initDB() -> Void {
@@ -60,13 +57,12 @@ class RNDelegate: UIResponder, UIApplicationDelegate, RCTBridgeDelegate {
       do {
         let setting = try JSONDecoder().decode(SettingModel.self, from: localData)
         for (key, value) in setting.components {
-          let bundlePath: String = Bundle.main.path(forResource: "bundle/\(key)", ofType: "") ?? ""
           let componentModel: ComponentModel = ComponentModel.init(
             ComponentName: value.componentName,
             BundleName: key,
             Version: 0,
             Hash: value.hash,
-            Filepath: bundlePath,
+            FilePath: "assets://bundle/\(key)",
             PublishTime: setting.timestamp,
             InstallTime: Int64(Date().timeIntervalSince1970 * 1000)
           )
@@ -77,5 +73,25 @@ class RNDelegate: UIResponder, UIApplicationDelegate, RCTBridgeDelegate {
         debugPrint("InitDB failure")
       }
     }
+  }
+  
+  func initView() -> Void {
+    let homeBuzBundleUrl = Bundle.main.url(forResource: "bundle/home.buz.ios", withExtension: "bundle")!
+    let onComplete = {() -> Void in
+      let rootView = RCTRootView(bridge: self.bridge, moduleName: "Home", initialProperties: nil)
+
+      if #available(iOS 13.0, *) {
+        rootView.backgroundColor = UIColor.systemBackground
+      } else {
+        rootView.backgroundColor = UIColor.white
+      }
+
+      self.window = UIWindow(frame: UIScreen.main.bounds)
+      let rootViewController = UIViewController()
+      rootViewController.view = rootView
+      self.window?.rootViewController = rootViewController
+      self.window?.makeKeyAndVisible()
+    }
+//    bridge.batched.loadAndExecuteSplitBundleURL(homeBuzBundleUrl, onError: nil, onComplete: onComplete)
   }
 }

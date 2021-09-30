@@ -43,6 +43,11 @@ class RNBridge: RCTEventEmitter {
     resolve(true)
   }
   
+  @objc(openComponent:moduleName:)
+  func openComponent(_ bundlePath: String, moduleName: String ) -> Void {
+    print(bundlePath, moduleName)
+  }
+  
   public static func sendEvent(eventName: String, eventData: Any?) -> Void {
     RNBridge.eventEmitter?.sendEvent(withName: eventName, body: RNConvert.convert(eventData))
   }

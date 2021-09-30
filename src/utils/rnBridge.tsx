@@ -31,7 +31,11 @@ export function openComponent(
   moduleName: string,
   statusBarMode: StatusBarMode = StatusBarMode.LIGHT,
 ) {
-  RNBridge?.openComponent(bundlePath, moduleName, statusBarMode);
+  if (IsIOS) {
+    RNBridge?.openComponent(bundlePath, moduleName);
+  } else {
+    RNBridge?.openComponent(bundlePath, moduleName, statusBarMode);
+  }
 }
 
 /**
