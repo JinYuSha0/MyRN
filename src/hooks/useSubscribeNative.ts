@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { EmitterSubscription } from 'react-native';
-import { EventEmitter } from '@utils/rnBridge';
-import { NativeConstants } from '@utils/constant';
+import { EventEmitter, registerEvent } from '@utils/rnBridge';
+import { IsIOS, NativeConstants } from '@utils/constant';
 
 export default function useSubscribeNative(
   eventNames: string[],
@@ -10,7 +10,10 @@ export default function useSubscribeNative(
   const eventListeners = useRef<EmitterSubscription[]>([]);
 
   useEffect(() => {
-    eventNames.forEach(eventName => {
+    eventNames.forEach(async eventName => {
+      if (IsIOS) {
+        await registerEvent(NativeConstants.prefix + eventName)
+      }
       eventListeners.current.push(
         EventEmitter.addListener(
           NativeConstants.prefix + eventName,
@@ -21,7 +24,11 @@ export default function useSubscribeNative(
 
     return () => {
       eventListeners.current.forEach(eventListener => {
-        EventEmitter.removeSubscription(eventListener);
+        if (eventListener && !!eventListener.remove) {
+          eventListener.remove()
+        } else {
+          EventEmitter.removeSubscription(eventListener);
+        }
       });
     };
   }, []);

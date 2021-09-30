@@ -1,5 +1,6 @@
 import { NativeModules, NativeEventEmitter } from 'react-native';
 import { Component } from '@src/types/bridge';
+import { IsIOS } from './constant';
 
 export const { RNBridge } = NativeModules;
 
@@ -39,4 +40,14 @@ export function openComponent(
  */
 export function getAllComponent(): Promise<Component[]> {
   return RNBridge?.getAllComponent();
+}
+
+/**
+ * ios注册事件
+ * @param eventName 
+ * @returns 
+ */
+export function registerEvent(eventName: string): Promise<boolean> {
+  if (!IsIOS) return Promise.resolve(true)
+  return RNBridge?.registerEvent(eventName)
 }
