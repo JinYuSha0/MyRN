@@ -6,6 +6,7 @@
 #import <UIKit/UIKit.h>
 
 #import <React/RCTBridge.h>
+#import "RCTBridge.h"
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
 

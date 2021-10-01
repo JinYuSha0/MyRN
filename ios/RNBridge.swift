@@ -19,12 +19,14 @@ class RNBridge: RCTEventEmitter {
     RNBridge.eventEmitter = self
   }
 
-  @objc
   override func constantsToExport() -> [AnyHashable : Any]! {
     return ["model": UIDevice.modelName, "prefix": RNBridge.PREFIX + "_"]
   }
   
-  @objc
+  override class func requiresMainQueueSetup() -> Bool {
+    return false
+  }
+  
   override func supportedEvents() -> [String]! {
     return RNBridge.registeredSupportEvents
   }

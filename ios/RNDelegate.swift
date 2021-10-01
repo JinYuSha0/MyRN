@@ -40,11 +40,15 @@ class RNDelegate: UIResponder, UIApplicationDelegate {
       commonBundleUrl = Bundle.main.url(forResource: "bundle/common.ios", withExtension: "bundle")!
     }
 
-    bridge = RCTBridge.init(bundleURL: commonBundleUrl, moduleProvider: nil, launchOptions: launchOptions)
-    
-    initView()
+    bridge = RCTBridge(bundleURL: commonBundleUrl, moduleProvider: nil, launchOptions: launchOptions)
     
     initDB()
+    
+    DispatchQueue.global().async{
+      DispatchQueue.main.async{
+        self.initView()
+      }
+    }
     
     return true
   }
@@ -76,8 +80,13 @@ class RNDelegate: UIResponder, UIApplicationDelegate {
   }
   
   func initView() -> Void {
-    let homeBuzBundleUrl = Bundle.main.url(forResource: "bundle/home.buz.ios", withExtension: "bundle")!
-    let onComplete = {() -> Void in
+    do {
+      if !DEBUG {
+        let homeBuzBundleUrl = Bundle.main.url(forResource: "bundle/home.buz.ios", withExtension: "bundle")!
+        let bundleData = try Data(contentsOf: homeBuzBundleUrl)
+        self.bridge.batched.executeSourceCode(bundleData, sync: false)
+      }
+      
       let rootView = RCTRootView(bridge: self.bridge, moduleName: "Home", initialProperties: nil)
 
       if #available(iOS 13.0, *) {
@@ -91,7 +100,8 @@ class RNDelegate: UIResponder, UIApplicationDelegate {
       rootViewController.view = rootView
       self.window?.rootViewController = rootViewController
       self.window?.makeKeyAndVisible()
+    } catch {
+      print(error)
     }
-//    bridge.batched.loadAndExecuteSplitBundleURL(homeBuzBundleUrl, onError: nil, onComplete: onComplete)
   }
 }

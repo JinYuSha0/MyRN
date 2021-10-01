@@ -10,8 +10,6 @@
 
 @interface RCT_EXTERN_MODULE(RNBridge, RCTEventEmitter)
 
-RCT_EXTERN_METHOD(supportedEvents)
-
 RCT_EXTERN_METHOD(registerEvent: (NSString)eventName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 
 RCT_EXTERN_METHOD(getAllComponent: (RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)

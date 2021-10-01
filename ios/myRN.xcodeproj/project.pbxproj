@@ -131,6 +131,7 @@
 		7F106802AB76248758C246EF /* libPods-myRN-myRNTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-myRN-myRNTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = myRN/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		97C5C265497B42EABBADD563 /* Pods-myRN-myRNTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-myRN-myRNTests.debug.xcconfig"; path = "Target Support Files/Pods-myRN-myRNTests/Pods-myRN-myRNTests.debug.xcconfig"; sourceTree = "<group>"; };
+		E2DC275527074828003FFE47 /* RCTBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTBridge.h; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -230,6 +231,7 @@
 				060FBEAA270402D300F8D1D7 /* RNBridge.m */,
 				060FBEB127040E8300F8D1D7 /* RNController.swift */,
 				060FC01827045C4700F8D1D7 /* RNDBHelper.swift */,
+				E2DC275527074828003FFE47 /* RCTBridge.h */,
 			);
 			name = myRN;
 			sourceTree = "<group>";
