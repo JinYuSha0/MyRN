@@ -34,6 +34,7 @@ class RNBundleLoader: NSObject {
   }
   
   static func load(_ BundleName: String) {
+    if RNDelegate.DEBUG { return }
     if BundleName.starts(with: "assets://") {
       var filePath = BundleName
       let startIndex = filePath.startIndex

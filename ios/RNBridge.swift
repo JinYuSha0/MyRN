@@ -47,9 +47,17 @@ class RNBridge: RCTEventEmitter {
   
   @objc(openComponent:moduleName:)
   func openComponent(_ bundleName: String, moduleName: String) -> Void {
+    let params: Dictionary<String, Any> = ["goBack": true]
     DispatchQueue.main.async {
-      let controller: UIViewController = RNController(bundleName: bundleName, moduleName: moduleName, params: nil)
+      let controller: UIViewController = RNController(bundleName: bundleName, moduleName: moduleName, params: params)
       UIApplication.topNavigationController()?.pushViewController(controller, animated: true)
+    }
+  }
+  
+  @objc(goBack)
+  func goBack() -> Void {
+    DispatchQueue.main.async {
+      UIApplication.topNavigationController()?.popViewController(animated: true)
     }
   }
   

@@ -10,9 +10,9 @@ import React
 class RNController: UIViewController {
   var bundleName: String
   var moduleName: String
-  var params: NSDictionary?
+  var params: Dictionary<String, Any>
   
-  init(bundleName: String, moduleName: String, params: NSDictionary?) {
+  init(bundleName: String, moduleName: String, params: Dictionary<String, Any>) {
     self.bundleName = bundleName
     self.moduleName = moduleName
     self.params = params
@@ -32,7 +32,7 @@ class RNController: UIViewController {
     let result = RNDBHelper.manager.selectByBundleName(self.bundleName)!
     RNBundleLoader.load(result.FilePath)
     let rctBridge = RNBundleLoader.getBridge()
-    let view = RCTRootView(bridge: rctBridge, moduleName: self.moduleName, initialProperties: nil)
+    let view = RCTRootView(bridge: rctBridge, moduleName: self.moduleName, initialProperties: self.params)
     self.view = view
   }
   

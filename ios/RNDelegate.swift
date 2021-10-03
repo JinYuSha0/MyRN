@@ -11,7 +11,7 @@ import React
 class RNDelegate: UIResponder, UIApplicationDelegate {
   
   // 开启关闭调试
-  let DEBUG: Bool = false
+  public static let DEBUG: Bool = false
   // 默认模块
   let DEFAULT_MODULE = "Home"
   // 默认启动业务包
@@ -34,12 +34,12 @@ class RNDelegate: UIResponder, UIApplicationDelegate {
       InitializeFlipper(application)
     #endif
     
-    RCTDevSettingsSetEnabled(DEBUG)
-    RCTDevLoadingView.setEnabled(DEBUG)
+    RCTDevSettingsSetEnabled(RNDelegate.DEBUG)
+    RCTDevLoadingView.setEnabled(RNDelegate.DEBUG)
     
     var commonBundleUrl: URL
     
-    if DEBUG {
+    if RNDelegate.DEBUG {
       commonBundleUrl = RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: "index", fallbackResource: nil)
     } else {
       commonBundleUrl = Bundle.main.url(forResource: "bundle/common.ios", withExtension: "bundle")!
@@ -50,7 +50,7 @@ class RNDelegate: UIResponder, UIApplicationDelegate {
     bridge = RCTBridge.init(bundleURL: commonBundleUrl, moduleProvider: nil, launchOptions: launchOptions)
     RNBundleLoader.setBridge(bridge)
     
-    if !DEBUG {
+    if !RNDelegate.DEBUG {
       // 接收公共包加载完成的通知后才能加载业务包，否则会执行js报错
       NotificationCenter.default.addObserver(self, selector: #selector(initView), name: NSNotification.Name("RCTJavaScriptDidLoadNotification"), object: nil)
     } else {
@@ -61,7 +61,7 @@ class RNDelegate: UIResponder, UIApplicationDelegate {
   }
   
   @objc func initView() -> Void {
-    if !DEBUG {
+    if !RNDelegate.DEBUG {
       // 移除通知监听，防止反复执行
       NotificationCenter.default.removeObserver(self)
       // 执行默认bundle包
@@ -80,8 +80,8 @@ class RNDelegate: UIResponder, UIApplicationDelegate {
     let rootViewController = UIViewController()
     rootViewController.view = rootView
     let navContoller = UINavigationController.init(rootViewController: rootViewController)
-    self.window?.rootViewController = navContoller
     navContoller.setNavigationBarHidden(true, animated: false)
+    self.window?.rootViewController = navContoller
     self.window?.makeKeyAndVisible()
   }
   

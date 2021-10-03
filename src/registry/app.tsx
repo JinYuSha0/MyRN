@@ -5,6 +5,9 @@ import { CommonScreenProps } from '@navigators/index';
 import { isNil } from '@src/utils/utils';
 import { StatusBarMode } from '@src/utils/rnBridge';
 import { StatusBar } from 'react-native';
+import { Text } from 'react-native-ui-lib';
+import { goBack } from '@utils/rnBridge';
+import { IsIOS } from '@src/utils/constant';
 
 export enum ComponentName {
   Home = 'Home',
@@ -29,6 +32,17 @@ const App: React.FC<ScreenProps> = props => {
           (routeParams.statusBarMode & StatusBarMode.LIGHT) > 0)
       ) {
         CommonScreenProps.headerStatusBarHeight = StatusBar.currentHeight;
+      }
+      if (IsIOS && routeParams.goBack) {
+        CommonScreenProps.headerLeft = props => {
+          return (
+            <Text
+              white
+              onPress={IsIOS && props.canGoBack ? props.onPress : goBack}>
+              back
+            </Text>
+          );
+        };
       }
       return { ...CommonScreenProps };
     },

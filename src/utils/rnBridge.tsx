@@ -48,10 +48,17 @@ export function getAllComponent(): Promise<Component[]> {
 
 /**
  * ios注册事件
- * @param eventName 
- * @returns 
+ * @param eventName
+ * @returns
  */
 export function registerEvent(eventName: string): Promise<boolean> {
-  if (!IsIOS) return Promise.resolve(true)
-  return RNBridge?.registerEvent(eventName)
+  if (!IsIOS) return Promise.resolve(true);
+  return RNBridge?.registerEvent(eventName);
+}
+
+/**
+ * 返回
+ */
+export function goBack() {
+  return RNBridge?.goBack();
 }

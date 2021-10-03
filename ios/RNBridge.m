@@ -16,4 +16,6 @@ RCT_EXTERN_METHOD(getAllComponent: (RCTPromiseResolveBlock)resolve rejecter:(RCT
 
 RCT_EXTERN_METHOD(openComponent: (NSString)bundlePath moduleName:(NSString)moduleName)
 
+RCT_EXTERN_METHOD(goBack)
+
 @end

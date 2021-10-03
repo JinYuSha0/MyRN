@@ -5,6 +5,7 @@ export interface ScreenProps {
   bundleName: string;
   moduleName: string;
   statusBarMode: number;
+  goBack?: boolean;
 }
 
 export interface AppContextProps extends Partial<ScreenProps> {}
