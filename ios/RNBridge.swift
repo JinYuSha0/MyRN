@@ -46,8 +46,11 @@ class RNBridge: RCTEventEmitter {
   }
   
   @objc(openComponent:moduleName:)
-  func openComponent(_ bundlePath: String, moduleName: String ) -> Void {
-    print(bundlePath, moduleName)
+  func openComponent(_ bundleName: String, moduleName: String) -> Void {
+    DispatchQueue.main.async {
+      let controller: UIViewController = RNController(bundleName: bundleName, moduleName: moduleName, params: nil)
+      UIApplication.topNavigationController()?.pushViewController(controller, animated: true)
+    }
   }
   
   public static func sendEvent(eventName: String, eventData: Any?) -> Void {

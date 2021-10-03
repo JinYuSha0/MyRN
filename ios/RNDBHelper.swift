@@ -90,4 +90,25 @@ class RNDBHelper: NSObject {
     return result
   }
   
+  func selectByBundleName(_ BundleName: String) -> ComponentModel? {
+    var result: ComponentModel? = nil
+    do {
+      let sql = "SELECT ComponentName, BundleName, Version, Hash, Filepath, PublishTime, InstallTime FROM \(TableName) WHERE BundleName = '\(BundleName)' ORDER BY Version DESC LIMIT 1;"
+      for row in try getDB().prepare(sql) {
+        result = ComponentModel.init(
+          ComponentName: row[0] as? String,
+          BundleName: row[1] as! String,
+          Version: Int("\(row[2] ?? 0)")!,
+          Hash: row[3] as! String,
+          FilePath: row[4] as! String,
+          PublishTime: row[5] as! Int64,
+          InstallTime: row[6] as! Int64
+        )
+      }
+    } catch {
+      print(error)
+    }
+    return result
+  }
+  
 }

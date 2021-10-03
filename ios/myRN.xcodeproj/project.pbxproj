@@ -27,6 +27,8 @@
 		66A499ECB2EDE372111EF033 /* libPods-myRN.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7C4B83AAE93E1B5650E6D116 /* libPods-myRN.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		CA9DA52BCF8418E3732DE2BF /* libPods-myRN-myRNTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F106802AB76248758C246EF /* libPods-myRN-myRNTests.a */; };
+		E2DC276327094FDD003FFE47 /* UIApplicationUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2DC276227094FDD003FFE47 /* UIApplicationUtils.swift */; };
+		E2DC276C2709A42D003FFE47 /* RNBundleLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2DC276B2709A42D003FFE47 /* RNBundleLoader.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -132,6 +134,8 @@
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = myRN/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		97C5C265497B42EABBADD563 /* Pods-myRN-myRNTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-myRN-myRNTests.debug.xcconfig"; path = "Target Support Files/Pods-myRN-myRNTests/Pods-myRN-myRNTests.debug.xcconfig"; sourceTree = "<group>"; };
 		E2DC275527074828003FFE47 /* RCTBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTBridge.h; sourceTree = "<group>"; };
+		E2DC276227094FDD003FFE47 /* UIApplicationUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIApplicationUtils.swift; sourceTree = "<group>"; };
+		E2DC276B2709A42D003FFE47 /* RNBundleLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNBundleLoader.swift; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -180,6 +184,7 @@
 				060FBEAF2704062A00F8D1D7 /* Math.swift */,
 				060FBEB527041A3800F8D1D7 /* Preferences.swift */,
 				06D68D9227056666004911D5 /* RNConvert.swift */,
+				E2DC276227094FDD003FFE47 /* UIApplicationUtils.swift */,
 			);
 			path = utils;
 			sourceTree = "<group>";
@@ -232,6 +237,7 @@
 				060FBEB127040E8300F8D1D7 /* RNController.swift */,
 				060FC01827045C4700F8D1D7 /* RNDBHelper.swift */,
 				E2DC275527074828003FFE47 /* RCTBridge.h */,
+				E2DC276B2709A42D003FFE47 /* RNBundleLoader.swift */,
 			);
 			name = myRN;
 			sourceTree = "<group>";
@@ -617,10 +623,12 @@
 				06D68D9327056666004911D5 /* RNConvert.swift in Sources */,
 				060FBEAB270402D300F8D1D7 /* RNBridge.m in Sources */,
 				060FC01D27046E1400F8D1D7 /* ComponentModel.swift in Sources */,
+				E2DC276C2709A42D003FFE47 /* RNBundleLoader.swift in Sources */,
 				060FBEA827030A0600F8D1D7 /* RNBridge.swift in Sources */,
 				060FBEA62702F54800F8D1D7 /* RNDelegate.swift in Sources */,
 				060FBEB02704062A00F8D1D7 /* Math.swift in Sources */,
 				060FBEB227040E8300F8D1D7 /* RNController.swift in Sources */,
+				E2DC276327094FDD003FFE47 /* UIApplicationUtils.swift in Sources */,
 				060FBEBC2704464F00F8D1D7 /* SettingModel.swift in Sources */,
 				060FC01927045C4700F8D1D7 /* RNDBHelper.swift in Sources */,
 			);

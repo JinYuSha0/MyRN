@@ -9,12 +9,13 @@ import React
 
 @UIApplicationMain
 class RNDelegate: UIResponder, UIApplicationDelegate {
+  
   // 开启关闭调试
   let DEBUG: Bool = false
   // 默认模块
   let DEFAULT_MODULE = "Home"
   // 默认启动业务包
-  let DEFAULT_BUNDLE = "bundle/home.buz.ios"
+  let DEFAULT_BUNDLE = "bundle/home.buz.ios.bundle"
   var window: UIWindow?
   var bridge: RCTBridge!
   
@@ -47,6 +48,7 @@ class RNDelegate: UIResponder, UIApplicationDelegate {
     initDB()
     
     bridge = RCTBridge.init(bundleURL: commonBundleUrl, moduleProvider: nil, launchOptions: launchOptions)
+    RNBundleLoader.setBridge(bridge)
     
     if !DEBUG {
       // 接收公共包加载完成的通知后才能加载业务包，否则会执行js报错
@@ -59,32 +61,28 @@ class RNDelegate: UIResponder, UIApplicationDelegate {
   }
   
   @objc func initView() -> Void {
-    do {
-      if !DEBUG {
-        // 移除通知监听，防止反复执行
-        NotificationCenter.default.removeObserver(self)
-        // 执行默认bundle包
-        let homeBuzBundleUrl = Bundle.main.url(forResource: DEFAULT_BUNDLE, withExtension: "bundle")!
-        let bundleData = try Data(contentsOf: homeBuzBundleUrl)
-        self.bridge.batched.executeSourceCode(bundleData, sync: false)
-      }
-      
-      let rootView = RCTRootView(bridge: self.bridge, moduleName: DEFAULT_MODULE, initialProperties: nil)
-
-      if #available(iOS 13.0, *) {
-        rootView.backgroundColor = UIColor.systemBackground
-      } else {
-        rootView.backgroundColor = UIColor.white
-      }
-
-      self.window = UIWindow(frame: UIScreen.main.bounds)
-      let rootViewController = UIViewController()
-      rootViewController.view = rootView
-      self.window?.rootViewController = rootViewController
-      self.window?.makeKeyAndVisible()
-    } catch {
-      print(error)
+    if !DEBUG {
+      // 移除通知监听，防止反复执行
+      NotificationCenter.default.removeObserver(self)
+      // 执行默认bundle包
+      RNBundleLoader.loadScriptFromAssets(filePath: DEFAULT_BUNDLE, isSync: false)
     }
+    
+    let rootView = RCTRootView(bridge: self.bridge, moduleName: DEFAULT_MODULE, initialProperties: nil)
+
+    if #available(iOS 13.0, *) {
+      rootView.backgroundColor = UIColor.systemBackground
+    } else {
+      rootView.backgroundColor = UIColor.white
+    }
+
+    self.window = UIWindow(frame: UIScreen.main.bounds)
+    let rootViewController = UIViewController()
+    rootViewController.view = rootView
+    let navContoller = UINavigationController.init(rootViewController: rootViewController)
+    self.window?.rootViewController = navContoller
+    navContoller.setNavigationBarHidden(true, animated: false)
+    self.window?.makeKeyAndVisible()
   }
   
   func initDB() -> Void {
