@@ -5,9 +5,10 @@ import { CommonScreenProps } from '@navigators/index';
 import { isNil } from '@src/utils/utils';
 import { StatusBarMode } from '@src/utils/rnBridge';
 import { StatusBar } from 'react-native';
-import { Text } from 'react-native-ui-lib';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import { goBack } from '@utils/rnBridge';
 import { IsIOS } from '@src/utils/constant';
+import BackSVG from '@assets/images/back.svg';
 
 export enum ComponentName {
   Home = 'Home',
@@ -36,11 +37,11 @@ const App: React.FC<ScreenProps> = props => {
       if (IsIOS && routeParams.goBack) {
         CommonScreenProps.headerLeft = props => {
           return (
-            <Text
-              white
-              onPress={IsIOS && props.canGoBack ? props.onPress : goBack}>
-              back
-            </Text>
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={props.canGoBack ? props.onPress : goBack}>
+              <BackSVG width={22} fill={'#FFF'} />
+            </TouchableOpacity>
           );
         };
       }
