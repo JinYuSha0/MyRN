@@ -6,6 +6,7 @@
 //
 
 import React
+import Alamofire
 
 @objc(RNBridge)
 class RNBridge: RCTEventEmitter {
@@ -58,6 +59,50 @@ class RNBridge: RCTEventEmitter {
   func goBack() -> Void {
     DispatchQueue.main.async {
       UIApplication.topNavigationController()?.popViewController(animated: true)
+    }
+  }
+  
+  @objc(checkUpdate:rejecter:)
+  func checkUpdate(_ resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) -> Void {
+    func onSuccess(_ data: CheckUpdate) -> Void {
+      resolve(data)
+    }
+    func onError(_ errorMsg: String) -> Void {
+      reject(nil, errorMsg, nil)
+    }
+    RNBridge.checkUpdate(onSuccess: onSuccess, onError: onError)
+  }
+  
+  public static func checkUpdate(
+    onSuccess: @escaping ((_ data: CheckUpdate) -> Void),
+    onError: @escaping ((_ errorMsg: String) -> Void)
+  ) {
+    let componentsMap = RNDBHelper.manager.selectAllMap()
+    let common = componentsMap["common"]
+    AF.request("http://192.168.1.104:3000/rn/checkUpdate", method: .get, parameters: ["platform": "ios", "commonHash": (common?.Hash ?? "") ]).responseData { response in
+      switch response.result {
+        case .success(let vale):
+          do {
+            let result: CheckUpdate = try JSONDecoder().decode(CheckUpdate.self, from: vale )
+            if result.success {
+              for component in result.data {
+                let oldComponent = componentsMap[component.componentName]
+                if oldComponent == nil || (component.version > oldComponent?.Version ?? 0 && component.hash != oldComponent?.Hash) {
+                  print(component.downloadUrl)
+                  // todo download
+                }
+              }
+            } else {
+              onError(result.message!)
+            }
+          } catch {
+            onError(error.localizedDescription)
+          }
+          break
+        case .failure(let error):
+          onError(error.errorDescription ?? "Request unknow error")
+          break
+      }
     }
   }
   

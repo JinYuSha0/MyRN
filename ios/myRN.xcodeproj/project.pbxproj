@@ -20,6 +20,7 @@
 		060FBEBC2704464F00F8D1D7 /* SettingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 060FBEBB2704464F00F8D1D7 /* SettingModel.swift */; };
 		060FC01927045C4700F8D1D7 /* RNDBHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 060FC01827045C4700F8D1D7 /* RNDBHelper.swift */; };
 		060FC01D27046E1400F8D1D7 /* ComponentModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 060FC01C27046E1400F8D1D7 /* ComponentModel.swift */; };
+		068BD15827105AFE00C2F7A8 /* CheckUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068BD15727105AFE00C2F7A8 /* CheckUpdate.swift */; };
 		06D68D9327056666004911D5 /* RNConvert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06D68D9227056666004911D5 /* RNConvert.swift */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		66A499ECB2EDE372111EF033 /* libPods-myRN.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7C4B83AAE93E1B5650E6D116 /* libPods-myRN.a */; };
@@ -69,6 +70,7 @@
 		060FBEBB2704464F00F8D1D7 /* SettingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingModel.swift; sourceTree = "<group>"; };
 		060FC01827045C4700F8D1D7 /* RNDBHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNDBHelper.swift; sourceTree = "<group>"; };
 		060FC01C27046E1400F8D1D7 /* ComponentModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentModel.swift; sourceTree = "<group>"; };
+		068BD15727105AFE00C2F7A8 /* CheckUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckUpdate.swift; sourceTree = "<group>"; };
 		06D68D9227056666004911D5 /* RNConvert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNConvert.swift; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* myRN.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = myRN.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = myRN/Images.xcassets; sourceTree = "<group>"; };
@@ -140,6 +142,7 @@
 			children = (
 				060FBEBB2704464F00F8D1D7 /* SettingModel.swift */,
 				060FC01C27046E1400F8D1D7 /* ComponentModel.swift */,
+				068BD15727105AFE00C2F7A8 /* CheckUpdate.swift */,
 			);
 			path = models;
 			sourceTree = "<group>";
@@ -495,6 +498,7 @@
 				060FBEB627041A3800F8D1D7 /* Preferences.swift in Sources */,
 				06D68D9327056666004911D5 /* RNConvert.swift in Sources */,
 				060FBEAB270402D300F8D1D7 /* RNBridge.m in Sources */,
+				068BD15827105AFE00C2F7A8 /* CheckUpdate.swift in Sources */,
 				060FC01D27046E1400F8D1D7 /* ComponentModel.swift in Sources */,
 				E2DC276C2709A42D003FFE47 /* RNBundleLoader.swift in Sources */,
 				060FBEA827030A0600F8D1D7 /* RNBridge.swift in Sources */,
@@ -758,7 +762,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
 					"$(inherited)",
@@ -816,7 +820,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
 					"$(inherited)",

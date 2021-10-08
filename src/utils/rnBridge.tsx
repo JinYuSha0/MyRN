@@ -1,5 +1,5 @@
 import { NativeModules, NativeEventEmitter } from 'react-native';
-import { Component } from '@src/types/bridge';
+import { Component, CheckUpdateResult } from '@src/types/bridge';
 import { IsIOS } from './constant';
 
 export const { RNBridge } = NativeModules;
@@ -61,4 +61,11 @@ export function registerEvent(eventName: string): Promise<boolean> {
  */
 export function goBack() {
   return RNBridge?.goBack();
+}
+
+/**
+ * 手动检查业务包更新
+ */
+export function checkUpdate(): Promise<CheckUpdateResult> {
+  return RNBridge?.checkUpdate();
 }

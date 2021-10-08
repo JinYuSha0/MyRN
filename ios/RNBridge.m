@@ -18,4 +18,6 @@ RCT_EXTERN_METHOD(openComponent: (NSString)bundlePath moduleName:(NSString)modul
 
 RCT_EXTERN_METHOD(goBack)
 
+RCT_EXTERN_METHOD(checkUpdate: (RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+
 @end

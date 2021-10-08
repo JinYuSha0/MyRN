@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class RNDBHelper extends SQLiteOpenHelper {
   private static final int DB_VERSION = 1;
@@ -20,7 +21,8 @@ public class RNDBHelper extends SQLiteOpenHelper {
 
   @Override
   public void onCreate(SQLiteDatabase sqLiteDatabase) {
-
+    String sql = "create table if not exists " + TABLE_NAME + " (BundleName varchar(100), ComponentName varchar(100), Version interge, Hash varchar(100), Filepath varchar(100), PublishTime interge, InstallTime integer, primary key(BundleName, Version))";
+    sqLiteDatabase.execSQL(sql);
   }
 
   @Override
@@ -102,6 +104,16 @@ public class RNDBHelper extends SQLiteOpenHelper {
     Cursor cursor = db.rawQuery(sql,null);
     while (cursor.moveToNext()) {
       result.add(parseCursor(cursor));
+    }
+    return result;
+  }
+
+  public static HashMap<String, Result> selectAllMap() {
+    HashMap<String, Result> result = new HashMap<>();
+    ArrayList<Result> components = RNDBHelper.selectAll();
+    for (int i = 0; i < components.size(); i++) {
+      Result curr = components.get(i);
+      result.put((curr.ComponentName == null || "".equals(curr.ComponentName)) ? "common" : curr.ComponentName , curr);
     }
     return result;
   }

@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.ContentValues;
 import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -22,43 +21,18 @@ import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.soloader.SoLoader;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import com.facebook.react.bridge.JSIModulePackage;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.myrn.constant.EventName;
 import com.myrn.constant.StorageKey;
-import com.myrn.entity.Component;
-import com.myrn.entity.ComponentSetting;
-import com.myrn.entity.VersionInfo;
-import com.myrn.iface.MyResponse;
 import com.myrn.utils.FileUtil;
 import com.myrn.utils.Preferences;
-import com.myrn.utils.RequestManager;
-import com.myrn.utils.download.DownloadProgressListener;
-import com.myrn.utils.download.DownloadTask;
 import com.swmansion.reanimated.ReanimatedJSIModulePackage;
-
-import net.lingala.zip4j.ZipFile;
-import net.lingala.zip4j.model.UnzipParameters;
-import net.lingala.zip4j.model.ZipParameters;
 
 import org.json.JSONObject;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
-import java.util.zip.ZipInputStream;
 
 public class RNApplication extends Application implements ReactApplication {
 
@@ -153,7 +127,7 @@ public class RNApplication extends Application implements ReactApplication {
     public void onActivityStarted(@NonNull Activity activity) {
       if (isBackGround) {
         isBackGround = false;
-        checkUpdate();
+        RNBridge.checkUpdate(activity,null);
       }
     }
 
@@ -237,129 +211,6 @@ public class RNApplication extends Application implements ReactApplication {
       } catch (Exception exception) {
         exception.printStackTrace();
       }
-    }
-  }
-
-  /**
-   * 检查是否有新的模块需要下载
-   */
-  private void checkUpdate() {
-    // debug
-    if (mReactNativeHost != null && mReactNativeHost.getUseDeveloperSupport()) return;
-    try {
-      final File downloadPath = this.getExternalFilesDir(null);
-      final Context mContext = this;
-      ArrayList<RNDBHelper.Result> results = RNDBHelper.selectAll();
-      final HashMap<String, VersionInfo> componentMap = new HashMap<>();
-      for (int i = 0; i < results.size(); i++) {
-        RNDBHelper.Result curr = results.get(i);
-        if (curr.ComponentName != null) {
-          VersionInfo info = new VersionInfo(curr.Hash, curr.Version);
-          componentMap.put(curr.ComponentName, info);
-        }
-      }
-      RNBridge.sendEventInner(EventName.CHECK_UPDATE_START, null);
-      RequestManager.getInstance(this).Get("/rn/checkUpdate", new HashMap<String, String>(), new RequestManager.RequestCallBack<MyResponse<ArrayList<Component>>, MyResponse<Object>>() {
-        @Override
-        public void onFailure(MyResponse<Object> error, Exception exception) {
-          String cause;
-          if (exception != null) {
-            cause = exception.getMessage();
-          } else {
-            cause = error.message;
-          }
-          RNBridge.sendEventInner(EventName.CHECK_UPDATE_FAILURE, cause);
-        }
-
-        @Override
-        public void onSuccess(MyResponse<ArrayList<Component>> result) {
-          RNBridge.sendEventInner(EventName.CHECK_UPDATE_SUCCESS, result);
-          for (int i = 0; i < result.data.size(); i++) {
-            final Component newComponent = result.data.get(i);
-            final VersionInfo oldComponent = componentMap.get(newComponent.componentName);
-            // 如果hash不相同 且版本大于当前版本 下载新的bundle包
-            if (!oldComponent.hash.equals(newComponent.hash) && newComponent.version > oldComponent.version) {
-              RNBridge.sendEventInner(EventName.CHECK_UPDATE_DOWNLOAD_NEWS,null);
-              new Thread(new DownloadTask(
-                      mContext,
-                      newComponent.downloadUrl,
-                      String.format("%s-%s.zip",newComponent.componentName,newComponent.hash),
-                      downloadPath,
-                      new DownloadProgressListener() {
-                        @Override
-                        public void onDownloadSize(int downloadedSize) {
-                        }
-
-                        @Override
-                        public void onDownloadFailure(Exception e) {
-                          RNBridge.sendEventInner(EventName.CHECK_UPDATE_DOWNLOAD_NEWS_FAILURE,e.getMessage());
-                        }
-
-                        @Override
-                        public void onDownLoadComplete(File originFile) {
-                          File file = new File(String.format("%s/%s",downloadPath.getAbsolutePath(),newComponent.hash));
-                          try {
-                            originFile.renameTo(file);
-                            String dest = String.format("%s/%s/",downloadPath.getAbsolutePath(),newComponent.componentName);
-                            ZipFile zipFile = new ZipFile(file);
-                            zipFile.extractAll(dest);
-                            setupComponent(String.format("%s%s",dest,newComponent.hash),newComponent.version);
-                            RNBridge.sendEventInner(EventName.CHECK_UPDATE_DOWNLOAD_NEWS_SUCCESS,null);
-                          } catch (Exception e) {
-                            e.printStackTrace();
-                          } finally {
-                            file.delete();
-                          }
-                        }
-                      })
-              ).start();
-            }
-          }
-        }
-
-        @Override
-        public Type getType(Boolean isFailure) {
-          if (!isFailure) {
-            return new TypeToken<MyResponse<ArrayList<Component>>>() {}.getType();
-          } else {
-            return new TypeToken<MyResponse<Object>>() {}.getType();
-          }
-        }
-      }).request();
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-
-  /**
-   * 应用下载完的组件
-   * @param componentDir
-   */
-  private void setupComponent(String componentDir,Integer version) {
-    try {
-      File settingJSONFile = new File(String.format("%s/%s",componentDir,"setting.json"));
-      String settingJSON = FileUtil.readFile(settingJSONFile);
-      ComponentSetting componentSetting = new Gson().fromJson(settingJSON, new TypeToken<ComponentSetting>() {}.getType());
-      String bundleFilePath = String.format("%s/%s", componentDir, componentSetting.bundleName);
-      if (FileUtil.fileExists(bundleFilePath)) {
-        String saveBundleFilePath = bundleFilePath.replaceAll(this.getExternalFilesDir(null).getAbsolutePath() + "/","file://");
-        RNDBHelper.insertRow(RNDBHelper.createContentValues(
-                componentSetting.bundleName,
-                componentSetting.componentName,
-                version,
-                componentSetting.hash,
-                saveBundleFilePath,
-                componentSetting.timestamp
-        ));
-        // 立即应用新模块
-        if (!RNActivity.isExistsModule(componentSetting.componentName)) {
-          RNBundleLoader.loadScriptFromFile(this,RNBundleLoader.getCatalystInstance(mReactNativeHost),bundleFilePath,false);
-        }
-        RNBridge.sendEventInner(EventName.CHECK_UPDATE_DOWNLOAD_NEWS_APPLY,null);
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
     }
   }
 

@@ -5,6 +5,7 @@ platform :ios, '11.0'
 target 'myRN' do
   config = use_native_modules!
   
+  pod 'Alamofire', '~> 5.4'
   pod 'SQLite.swift', '~> 0.13.0'
   
   use_react_native!(

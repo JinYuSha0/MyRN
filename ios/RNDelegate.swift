@@ -11,7 +11,7 @@ import React
 class RNDelegate: UIResponder, UIApplicationDelegate {
   
   // 开启关闭调试
-  public static let DEBUG: Bool = false
+  public static let DEBUG: Bool = true
   // 默认模块
   let DEFAULT_MODULE = "Home"
   // 默认启动业务包
@@ -58,6 +58,22 @@ class RNDelegate: UIResponder, UIApplicationDelegate {
     }
     
     return true
+  }
+  
+  func applicationDidBecomeActive(_ application: UIApplication) {
+    becomeActive()
+  }
+  
+  func becomeActive() -> Void {
+    DispatchQueue.global().async {
+      DispatchQueue.main.async {
+        let onSuccess = {(data: Any) -> Void in
+        }
+        let onError = {(errorMsg: String) -> Void in
+        }
+        RNBridge.checkUpdate(onSuccess: onSuccess, onError: onError)
+      }
+    }
   }
   
   @objc func initView() -> Void {

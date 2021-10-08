@@ -90,6 +90,15 @@ class RNDBHelper: NSObject {
     return result
   }
   
+  func selectAllMap() -> [String: ComponentModel] {
+    var result = [String: ComponentModel]()
+    let components = RNDBHelper.manager.selectAll()
+    for component in components {
+      result[component.ComponentName ?? "common"] = component
+    }
+    return result
+  }
+  
   func selectByBundleName(_ BundleName: String) -> ComponentModel? {
     var result: ComponentModel? = nil
     do {

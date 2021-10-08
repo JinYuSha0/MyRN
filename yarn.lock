@@ -6551,10 +6551,10 @@ rimraf@~2.6.2:
   dependencies:
     glob "^7.1.3"
 
-rn-multi-bundle@^0.0.8:
-  version "0.0.8"
-  resolved "https://registry.npmjs.org/rn-multi-bundle/-/rn-multi-bundle-0.0.8.tgz#b3e9ddded60c1f546ed8a754d747567627167f7f"
-  integrity sha512-lGb5qhVQXOCYsUvADVTAqdSzHWJRprG/mieI7Pl2R6yvfOFWAEkn01zcuYeHqi0WY2zu7Waxez4ixb8/c7Rr3g==
+rn-multi-bundle@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/rn-multi-bundle/-/rn-multi-bundle-0.1.0.tgz#664d7029750f7de895c325960e0919700a3e9659"
+  integrity sha512-t3pHETTvceyKQT6VHfK8cZpAFMMk41TGjZ0EsfeCMg/CQ1rEu6q5wij3L+SpEICCDwmnO2G9XS1vI6FlC4jdVA==
   dependencies:
     commander "^8.2.0"
 
