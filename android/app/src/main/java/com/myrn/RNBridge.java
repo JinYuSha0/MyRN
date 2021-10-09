@@ -87,7 +87,9 @@ public class RNBridge extends ReactContextBaseJavaModule {
     Activity activity = getActivity();
     if (activity == null) return;
     Intent intent = new Intent(activity, MainActivity.class);
-    Bundle bundle = createBundle(bundleName, moduleName, statusBarMode);
+    Bundle params = new Bundle();
+    params.putBoolean("goBack", true);
+    Bundle bundle = createBundle(bundleName, moduleName, statusBarMode, params);
     intent.putExtras(bundle);
     activity.startActivity(intent);
   }
@@ -148,39 +150,43 @@ public class RNBridge extends ReactContextBaseJavaModule {
             final RNDBHelper.Result oldComponent = componentMap.get(newComponent.componentName);
             // 如果hash不相同 且版本大于当前版本 下载新的bundle包
             if (!oldComponent.Hash.equals(newComponent.hash) && newComponent.version > oldComponent.Version) {
-              RNBridge.sendEventInner(EventName.CHECK_UPDATE_DOWNLOAD_NEWS,null);
+              RNBridge.sendEventInner(EventName.CHECK_UPDATE_DOWNLOAD_NEWS,newComponent);
               new Thread(new DownloadTask(
-                      mContext,
-                      newComponent.downloadUrl,
-                      String.format("%s-%s.zip",newComponent.componentName,newComponent.hash),
-                      downloadPath,
-                      new DownloadProgressListener() {
-                        @Override
-                        public void onDownloadSize(int downloadedSize) {
-                        }
+                mContext,
+                newComponent.downloadUrl,
+                String.format("%s-%s.zip",newComponent.componentName,newComponent.hash),
+                downloadPath,
+                new DownloadProgressListener() {
+                  @Override
+                  public void onDownloadSize(int downloadedSize, int fileSize) {
+                    WritableMap progress = Arguments.createMap();
+                    progress.putString("componentName",newComponent.componentName);
+                    progress.putDouble("progress", (double) downloadedSize / (double) fileSize);
+                    RNBridge.sendEventInner(EventName.CHECK_UPDATE_DOWNLOAD_PROGRESS,progress);
+                  }
 
-                        @Override
-                        public void onDownloadFailure(Exception e) {
-                          RNBridge.sendEventInner(EventName.CHECK_UPDATE_DOWNLOAD_NEWS_FAILURE,e.getMessage());
-                        }
+                  @Override
+                  public void onDownloadFailure(Exception e) {
+                    RNBridge.sendEventInner(EventName.CHECK_UPDATE_DOWNLOAD_NEWS_FAILURE,e.getMessage());
+                  }
 
-                        @Override
-                        public void onDownLoadComplete(File originFile) {
-                          File file = new File(String.format("%s/%s",downloadPath.getAbsolutePath(),newComponent.hash));
-                          try {
-                            originFile.renameTo(file);
-                            String dest = String.format("%s/%s/",downloadPath.getAbsolutePath(),newComponent.componentName);
-                            ZipFile zipFile = new ZipFile(file);
-                            zipFile.extractAll(dest);
-                            setupComponent(ctx,String.format("%s%s",dest,newComponent.hash),newComponent.version);
-                            RNBridge.sendEventInner(EventName.CHECK_UPDATE_DOWNLOAD_NEWS_SUCCESS,null);
-                          } catch (Exception e) {
-                            e.printStackTrace();
-                          } finally {
-                            file.delete();
-                          }
-                        }
-                      })
+                  @Override
+                  public void onDownLoadComplete(File originFile) {
+                    File file = new File(String.format("%s/%s",downloadPath.getAbsolutePath(),newComponent.hash));
+                    try {
+                      originFile.renameTo(file);
+                      String dest = String.format("%s/%s/",downloadPath.getAbsolutePath(),newComponent.componentName);
+                      ZipFile zipFile = new ZipFile(file);
+                      zipFile.extractAll(dest);
+                      setupComponent(ctx,String.format("%s%s",dest,newComponent.hash),newComponent.version);
+                      RNBridge.sendEventInner(EventName.CHECK_UPDATE_DOWNLOAD_NEWS_SUCCESS,newComponent);
+                    } catch (Exception e) {
+                      e.printStackTrace();
+                    } finally {
+                      file.delete();
+                    }
+                  }
+                })
               ).start();
             }
           }
@@ -221,22 +227,23 @@ public class RNBridge extends ReactContextBaseJavaModule {
                 saveBundleFilePath,
                 componentSetting.timestamp
         ));
+        RNBridge.sendEventInner(EventName.CHECK_UPDATE_DOWNLOAD_NEWS_APPLY,componentSetting.componentName);
         // 立即应用新模块
         if (!RNActivity.isExistsModule(componentSetting.componentName)) {
           RNBundleLoader.loadScriptFromFile(ctx,RNBundleLoader.getCatalystInstance(RNApplication.mReactNativeHost),bundleFilePath,false);
         }
-        RNBridge.sendEventInner(EventName.CHECK_UPDATE_DOWNLOAD_NEWS_APPLY,null);
       }
     } catch (Exception e) {
       e.printStackTrace();
     }
   }
 
-  public Bundle createBundle(String bundleName, String moduleName, @Nullable Integer statusBarMode) {
+  public Bundle createBundle(String bundleName, String moduleName, @Nullable Integer statusBarMode, @Nullable Bundle params) {
     Bundle bundle = new Bundle();
     bundle.putString("moduleName", moduleName);
-    bundle.putInt("statusBarMode", statusBarMode == null ? 0 : statusBarMode);
     bundle.putString("bundleName", bundleName);
+    bundle.putInt("statusBarMode", statusBarMode == null ? 0 : statusBarMode);
+    if (params != null) bundle.putAll(params);
     return bundle;
   }
 

@@ -6,6 +6,7 @@ target 'myRN' do
   config = use_native_modules!
   
   pod 'Alamofire', '~> 5.4'
+  pod 'SSZipArchive'
   pod 'SQLite.swift', '~> 0.13.0'
   
   use_react_native!(

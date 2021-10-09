@@ -1,17 +1,33 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import useSubscribeNative from '@hooks/useSubscribeNative';
 import { View, Text, Button, Card } from 'react-native-ui-lib';
-import { StyleSheet, ScrollView, ToastAndroid } from 'react-native';
+import {
+  StyleSheet,
+  ScrollView,
+  ToastAndroid,
+  RefreshControl,
+} from 'react-native';
 import { HomeRouteName, HomeScreenProps } from './types';
 import { EventName, ScreenHeight, ScreenWidth } from '@src/utils/constant';
-import { openComponent, getAllComponent } from '@utils/rnBridge';
+import { openComponent, getAllComponent, checkUpdate } from '@utils/rnBridge';
 import { Component } from '@src/types/bridge';
 
 const Home: React.FC<HomeScreenProps<HomeRouteName.Home>> = props => {
   const [components, setComponents] = useState<Component[]>([]);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
   const getData = useCallback(async () => {
     const components = await getAllComponent();
     setComponents(components);
+  }, []);
+  const checkComponentUpdate = useCallback(async () => {
+    try {
+      setRefreshing(true);
+      await checkUpdate();
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setRefreshing(false);
+    }
   }, []);
   useEffect(() => {
     getData();
@@ -23,6 +39,12 @@ const Home: React.FC<HomeScreenProps<HomeRouteName.Home>> = props => {
   return (
     <ScrollView
       style={styles.container}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={checkComponentUpdate}
+        />
+      }
       contentContainerStyle={{ paddingHorizontal: 20 }}>
       {components.map(component => {
         return (

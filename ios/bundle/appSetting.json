@@ -1,16 +1,16 @@
 {
   "components": {
     "common.ios.bundle": {
-      "hash": "c78a182cc8c24358ddc01fbc34e8d9bd"
+      "hash": "117c479c2c6115cf119553f4b9b1e067"
     },
     "home.buz.ios.bundle": {
-      "hash": "cbce6b2f8d17f86abd78e051941c6cb5",
+      "hash": "751e5735d3b010dfc710178ce65ae738",
       "componentName": "Home"
     },
     "test.buz.ios.bundle": {
-      "hash": "fc1c571eb5109a02be86972eab558374",
+      "hash": "282ad7a02ae15731cf151ea5d05a7cd5",
       "componentName": "Test"
     }
   },
-  "timestamp": 1633679284346
+  "timestamp": 1633774819900
 }

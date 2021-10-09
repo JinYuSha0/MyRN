@@ -27,6 +27,10 @@ class RNConvert: NSObject {
     if obj == nil {
       return nil
     }
+    if obj is NSDictionary {
+      // 不会深入转换
+      return obj as! NSDictionary
+    }
     let result: NSMutableDictionary = [:]
     let mirror = Mirror(reflecting: obj!)
     for property in mirror.children {

@@ -20,7 +20,10 @@
 		060FBEBC2704464F00F8D1D7 /* SettingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 060FBEBB2704464F00F8D1D7 /* SettingModel.swift */; };
 		060FC01927045C4700F8D1D7 /* RNDBHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 060FC01827045C4700F8D1D7 /* RNDBHelper.swift */; };
 		060FC01D27046E1400F8D1D7 /* ComponentModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 060FC01C27046E1400F8D1D7 /* ComponentModel.swift */; };
-		068BD15827105AFE00C2F7A8 /* CheckUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068BD15727105AFE00C2F7A8 /* CheckUpdate.swift */; };
+		068BD15827105AFE00C2F7A8 /* CheckUpdateModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068BD15727105AFE00C2F7A8 /* CheckUpdateModel.swift */; };
+		068BD15A27113F4500C2F7A8 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068BD15927113F4500C2F7A8 /* File.swift */; };
+		068BD15C271173A800C2F7A8 /* BuzSettingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068BD15B271173A800C2F7A8 /* BuzSettingModel.swift */; };
+		068BD15E27118BB400C2F7A8 /* EventName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068BD15D27118BB400C2F7A8 /* EventName.swift */; };
 		06D68D9327056666004911D5 /* RNConvert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06D68D9227056666004911D5 /* RNConvert.swift */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		66A499ECB2EDE372111EF033 /* libPods-myRN.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7C4B83AAE93E1B5650E6D116 /* libPods-myRN.a */; };
@@ -70,7 +73,10 @@
 		060FBEBB2704464F00F8D1D7 /* SettingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingModel.swift; sourceTree = "<group>"; };
 		060FC01827045C4700F8D1D7 /* RNDBHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNDBHelper.swift; sourceTree = "<group>"; };
 		060FC01C27046E1400F8D1D7 /* ComponentModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentModel.swift; sourceTree = "<group>"; };
-		068BD15727105AFE00C2F7A8 /* CheckUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckUpdate.swift; sourceTree = "<group>"; };
+		068BD15727105AFE00C2F7A8 /* CheckUpdateModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckUpdateModel.swift; sourceTree = "<group>"; };
+		068BD15927113F4500C2F7A8 /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
+		068BD15B271173A800C2F7A8 /* BuzSettingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuzSettingModel.swift; sourceTree = "<group>"; };
+		068BD15D27118BB400C2F7A8 /* EventName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventName.swift; sourceTree = "<group>"; };
 		06D68D9227056666004911D5 /* RNConvert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNConvert.swift; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* myRN.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = myRN.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = myRN/Images.xcassets; sourceTree = "<group>"; };
@@ -133,6 +139,7 @@
 				060FBEB527041A3800F8D1D7 /* Preferences.swift */,
 				06D68D9227056666004911D5 /* RNConvert.swift */,
 				E2DC276227094FDD003FFE47 /* UIApplicationUtils.swift */,
+				068BD15927113F4500C2F7A8 /* File.swift */,
 			);
 			path = utils;
 			sourceTree = "<group>";
@@ -142,7 +149,8 @@
 			children = (
 				060FBEBB2704464F00F8D1D7 /* SettingModel.swift */,
 				060FC01C27046E1400F8D1D7 /* ComponentModel.swift */,
-				068BD15727105AFE00C2F7A8 /* CheckUpdate.swift */,
+				068BD15727105AFE00C2F7A8 /* CheckUpdateModel.swift */,
+				068BD15B271173A800C2F7A8 /* BuzSettingModel.swift */,
 			);
 			path = models;
 			sourceTree = "<group>";
@@ -151,6 +159,7 @@
 			isa = PBXGroup;
 			children = (
 				060FBEB827041C0F00F8D1D7 /* StorageKey.swift */,
+				068BD15D27118BB400C2F7A8 /* EventName.swift */,
 			);
 			path = constants;
 			sourceTree = "<group>";
@@ -498,8 +507,11 @@
 				060FBEB627041A3800F8D1D7 /* Preferences.swift in Sources */,
 				06D68D9327056666004911D5 /* RNConvert.swift in Sources */,
 				060FBEAB270402D300F8D1D7 /* RNBridge.m in Sources */,
-				068BD15827105AFE00C2F7A8 /* CheckUpdate.swift in Sources */,
+				068BD15C271173A800C2F7A8 /* BuzSettingModel.swift in Sources */,
+				068BD15A27113F4500C2F7A8 /* File.swift in Sources */,
+				068BD15827105AFE00C2F7A8 /* CheckUpdateModel.swift in Sources */,
 				060FC01D27046E1400F8D1D7 /* ComponentModel.swift in Sources */,
+				068BD15E27118BB400C2F7A8 /* EventName.swift in Sources */,
 				E2DC276C2709A42D003FFE47 /* RNBundleLoader.swift in Sources */,
 				060FBEA827030A0600F8D1D7 /* RNBridge.swift in Sources */,
 				060FBEA62702F54800F8D1D7 /* RNDelegate.swift in Sources */,

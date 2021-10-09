@@ -4,10 +4,9 @@ import { AppProvider, ScreenProps } from '../app.context';
 import { CommonScreenProps } from '@navigators/index';
 import { isNil } from '@src/utils/utils';
 import { StatusBarMode } from '@src/utils/rnBridge';
-import { StatusBar } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { goBack } from '@utils/rnBridge';
-import { IsIOS } from '@src/utils/constant';
+import { StatusBarHeight } from '../utils/constant';
 import BackSVG from '@assets/images/back.svg';
 
 export enum ComponentName {
@@ -32,9 +31,9 @@ const App: React.FC<ScreenProps> = props => {
         ((routeParams.statusBarMode & StatusBarMode.DARK) > 0 ||
           (routeParams.statusBarMode & StatusBarMode.LIGHT) > 0)
       ) {
-        CommonScreenProps.headerStatusBarHeight = StatusBar.currentHeight;
+        CommonScreenProps.headerStatusBarHeight = StatusBarHeight;
       }
-      if (IsIOS && routeParams.goBack) {
+      if (routeParams.goBack) {
         CommonScreenProps.headerLeft = props => {
           return (
             <TouchableOpacity

@@ -7,6 +7,7 @@
 
 import React
 import Alamofire
+import SSZipArchive
 
 @objc(RNBridge)
 class RNBridge: RCTEventEmitter {
@@ -58,14 +59,15 @@ class RNBridge: RCTEventEmitter {
   @objc(goBack)
   func goBack() -> Void {
     DispatchQueue.main.async {
-      UIApplication.topNavigationController()?.popViewController(animated: true)
+      let popController =  UIApplication.topNavigationController()?.popViewController(animated: true)
+      RNController.removeController(controller: popController as? RNController)
     }
   }
   
   @objc(checkUpdate:rejecter:)
   func checkUpdate(_ resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) -> Void {
-    func onSuccess(_ data: CheckUpdate) -> Void {
-      resolve(data)
+    func onSuccess(_ data: CheckUpdateModel) -> Void {
+      resolve(RNConvert.convert(data))
     }
     func onError(_ errorMsg: String) -> Void {
       reject(nil, errorMsg, nil)
@@ -74,39 +76,104 @@ class RNBridge: RCTEventEmitter {
   }
   
   public static func checkUpdate(
-    onSuccess: @escaping ((_ data: CheckUpdate) -> Void),
+    onSuccess: @escaping ((_ data: CheckUpdateModel) -> Void),
     onError: @escaping ((_ errorMsg: String) -> Void)
   ) {
     let componentsMap = RNDBHelper.manager.selectAllMap()
     let common = componentsMap["common"]
-    AF.request("http://192.168.1.104:3000/rn/checkUpdate", method: .get, parameters: ["platform": "ios", "commonHash": (common?.Hash ?? "") ]).responseData { response in
+    RNBridge.sendEventInner(eventName: EventName.CHECK_UPDATE_START, eventData: nil)
+    AF.request("http://192.168.8.99:3000/rn/checkUpdate", method: .get, parameters: ["platform": "ios", "commonHash": (common?.Hash ?? "") ]).responseData { response in
       switch response.result {
-        case .success(let vale):
+        case .success(let value):
           do {
-            let result: CheckUpdate = try JSONDecoder().decode(CheckUpdate.self, from: vale )
+            let result: CheckUpdateModel = try JSONDecoder().decode(CheckUpdateModel.self, from: value )
+            RNBridge.sendEventInner(eventName: EventName.CHECK_UPDATE_SUCCESS, eventData: result)
             if result.success {
+              onSuccess(result)
               for component in result.data {
                 let oldComponent = componentsMap[component.componentName]
                 if oldComponent == nil || (component.version > oldComponent?.Version ?? 0 && component.hash != oldComponent?.Hash) {
-                  print(component.downloadUrl)
-                  // todo download
+                  RNBridge.sendEventInner(eventName: EventName.CHECK_UPDATE_DOWNLOAD_NEWS, eventData: component)
+                  let dest: DownloadRequest.Destination = { _, _ in
+                    let fileURL = File.documentURL.appendingPathComponent("\(component.componentName)-\(component.hash).zip")
+                    return (fileURL, [.removePreviousFile, .createIntermediateDirectories])
+                  }
+                  AF.download(component.downloadUrl, interceptor: nil, to: dest).downloadProgress(closure: { (progress) in
+                    RNBridge.sendEventInner(eventName: EventName.CHECK_UPDATE_DOWNLOAD_PROGRESS, eventData: ["componentName": component.componentName, "progress": progress.fractionCompleted])
+                  }).responseData { (res) in
+                    switch res.result {
+                      case .success:
+                        let unzipPath = File.createDirectory(dirname: "buzBundle")
+                        func completionHandler(path: String, success: Bool, error: Error?) {
+                          if success {
+                            setupComponent(componentDir: "\(unzipPath!)/\(component.hash)", version: component.version)
+                            RNBridge.sendEventInner(eventName: EventName.CHECK_UPDATE_DOWNLOAD_NEWS_SUCCESS, eventData: component)
+                          } else {
+                            print(error!)
+                          }
+                        }
+                        if unzipPath != nil {
+                          SSZipArchive.unzipFile(atPath: res.fileURL!.path, toDestination: unzipPath!, progressHandler: nil, completionHandler: completionHandler)
+                        }
+                        break
+                      case .failure:
+                        RNBridge.sendEventInner(eventName: EventName.CHECK_UPDATE_DOWNLOAD_NEWS_FAILURE, eventData: res.error?.localizedDescription)
+                        break
+                    }
+                  }
                 }
               }
             } else {
               onError(result.message!)
+              RNBridge.sendEventInner(eventName: EventName.CHECK_UPDATE_FAILURE, eventData: result.message!)
             }
           } catch {
             onError(error.localizedDescription)
+            RNBridge.sendEventInner(eventName: EventName.CHECK_UPDATE_FAILURE, eventData: error.localizedDescription)
           }
           break
         case .failure(let error):
-          onError(error.errorDescription ?? "Request unknow error")
+          let errorMsg = error.errorDescription ?? "Request unknow error"
+          onError(errorMsg)
+          RNBridge.sendEventInner(eventName: EventName.CHECK_UPDATE_FAILURE, eventData: errorMsg)
           break
       }
     }
   }
   
+  private static func setupComponent(componentDir: String, version: Int) {
+    do {
+      let settingData = try Data(contentsOf: URL(fileURLWithPath: "\(componentDir)/setting.json"))
+      let setting: BuzSettingModel = try JSONDecoder().decode(BuzSettingModel.self, from: settingData)
+      var bundleFilePath = "\(componentDir)/\(setting.bundleName)"
+      if File.isExists(path: bundleFilePath).isExists {
+        let buzBundlePath = File.createDirectory(dirname: "buzBundle")!
+        let range = buzBundlePath.startIndex...buzBundlePath.endIndex
+        bundleFilePath.replaceSubrange(range, with: "file://")
+        let componentModel: ComponentModel = ComponentModel.init(
+          ComponentName: setting.componentName,
+          BundleName: setting.bundleName,
+          Version: version,
+          Hash: setting.hash,
+          FilePath: bundleFilePath,
+          PublishTime: setting.timestamp,
+          InstallTime: Int64(Date().timeIntervalSince1970 * 1000)
+        )
+        RNDBHelper.manager.insertRow(row: componentModel)
+        RNBridge.sendEventInner(eventName: EventName.CHECK_UPDATE_DOWNLOAD_NEWS_APPLY, eventData: setting.componentName)
+        if !RNController.isExistsModule(moduleName: setting.componentName) {
+          RNBundleLoader.load(bundleFilePath)
+        }
+      }
+    } catch {
+      print(error)
+    }
+  }
+  
   public static func sendEvent(eventName: String, eventData: Any?) -> Void {
+    if !RNBridge.registeredSupportEvents.contains(eventName) {
+      RNBridge.registeredSupportEvents.append(eventName)
+    }
     RNBridge.eventEmitter?.sendEvent(withName: eventName, body: RNConvert.convert(eventData))
   }
   

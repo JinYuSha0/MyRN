@@ -250,7 +250,7 @@ public class FileDownloadered {
             }
           }
         }
-        if(listener!=null) listener.onDownloadSize(this.downloadedSize);
+        if(listener!=null) listener.onDownloadSize(this.downloadedSize, this.fileSize);
         //通知目前已经下载完成的数据长度
       }
       if(downloadedSize == this.fileSize) fileService.delete(this.downloadUrl);

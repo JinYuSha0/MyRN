@@ -2,6 +2,7 @@ package com.myrn.utils;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 
@@ -83,9 +84,13 @@ public class RNConvert {
     if (value instanceof String) {
     } else if (value instanceof Integer || value instanceof Double || value instanceof Float || value instanceof Long) {
     } else if (value instanceof Boolean) {
+    } else if (value instanceof WritableMap) {
+    } else if (value instanceof ReadableMap) {
+    } else if (value instanceof WritableArray) {
+    } else if (value instanceof ReadableArray) {
     } else if (value instanceof ArrayList) {
       isBase = false;
-    }else  {
+    } else  {
       isBase = false;
     }
     return isBase;

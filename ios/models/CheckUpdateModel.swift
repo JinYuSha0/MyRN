@@ -1,11 +1,11 @@
 //
-//  CheckUpdate.swift
+//  CheckUpdateModel.swift
 //  myRN
 //
 //  Created by Soul on 2021/10/8.
 //
 
-class CheckUpdate: Codable {
+class CheckUpdateModel: Codable {
   
   var code: Int
   var success: Bool

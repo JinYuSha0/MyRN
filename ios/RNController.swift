@@ -8,6 +8,26 @@
 import React
 
 class RNController: UIViewController {
+  
+  static private var controllerList = Set<RNController>()
+  
+  static public func removeController(controller: RNController?) {
+    if controller != nil {
+      RNController.controllerList.remove(controller!)
+    }
+  }
+  
+  static public func isExistsModule(moduleName: String) -> Bool {
+    var result = false
+    for controller in RNController.controllerList {
+      if controller.moduleName == moduleName {
+        result = true
+        break
+      }
+    }
+    return result
+  }
+  
   var bundleName: String
   var moduleName: String
   var params: Dictionary<String, Any>
@@ -25,6 +45,7 @@ class RNController: UIViewController {
   
   override func viewDidLoad() {
     super.viewDidLoad()
+    RNController.controllerList.insert(self)
     initView()
   }
   

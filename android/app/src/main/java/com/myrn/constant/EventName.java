@@ -9,6 +9,8 @@ public class EventName {
     public static final String CHECK_UPDATE_FAILURE = "CHECK_UPDATE_FAILURE";
     // 开始下载新的模块
     public static final String CHECK_UPDATE_DOWNLOAD_NEWS = "CHECK_UPDATE_DOWNLOAD_NEWS";
+    // 下载新模块进度
+    public static final String CHECK_UPDATE_DOWNLOAD_PROGRESS = "CHECK_UPDATE_DOWNLOAD_PROGRESS";
     // 下载新的模块成功
     public static final String CHECK_UPDATE_DOWNLOAD_NEWS_SUCCESS = "CHECK_UPDATE_DOWNLOAD_NEWS_SUCCESS";
     // 下载新的模块失败

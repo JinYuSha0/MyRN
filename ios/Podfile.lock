@@ -379,6 +379,7 @@ PODS:
   - SQLite.swift (0.13.0):
     - SQLite.swift/standard (= 0.13.0)
   - SQLite.swift/standard (0.13.0)
+  - SSZipArchive (2.2.3)
   - Yoga (1.14.0)
   - YogaKit (1.18.1):
     - Yoga (~> 1.14)
@@ -443,6 +444,7 @@ DEPENDENCIES:
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNSVG (from `../node_modules/react-native-svg`)
   - SQLite.swift (~> 0.13.0)
+  - SSZipArchive
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -463,6 +465,7 @@ SPEC REPOS:
     - libevent
     - OpenSSL-Universal
     - SQLite.swift
+    - SSZipArchive
     - YogaKit
 
 EXTERNAL SOURCES:
@@ -588,9 +591,10 @@ SPEC CHECKSUMS:
   RNScreens: eb0dfb2d6b21d2d7f980ad46b14eb306d2f1062e
   RNSVG: 551acb6562324b1d52a4e0758f7ca0ec234e278f
   SQLite.swift: 8add701609fd0ef78d097dcc75d20a9782e6f5fc
+  SSZipArchive: 62d4947b08730e4cda640473b0066d209ff033c9
   Yoga: aa0cb45287ebe1004c02a13f279c55a95f1572f4
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 6380cb0ffa91db3ba5046f11d7d53e3611bb7519
+PODFILE CHECKSUM: 78e952a4b851e138d494812fbc069a1ad1489bbd
 
 COCOAPODS: 1.10.1

@@ -11,7 +11,7 @@ import React
 class RNDelegate: UIResponder, UIApplicationDelegate {
   
   // 开启关闭调试
-  public static let DEBUG: Bool = true
+  public static let DEBUG: Bool = false
   // 默认模块
   let DEFAULT_MODULE = "Home"
   // 默认启动业务包
