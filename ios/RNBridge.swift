@@ -47,11 +47,11 @@ class RNBridge: RCTEventEmitter {
     resolve(true)
   }
   
-  @objc(openComponent:moduleName:)
-  func openComponent(_ bundleName: String, moduleName: String) -> Void {
+  @objc(openComponent:)
+  func openComponent(_ moduleName: String) -> Void {
     let params: Dictionary<String, Any> = ["goBack": true]
     DispatchQueue.main.async {
-      let controller: UIViewController = RNController(bundleName: bundleName, moduleName: moduleName, params: params)
+      let controller: UIViewController = RNController(moduleName: moduleName, params: params)
       UIApplication.topNavigationController()?.pushViewController(controller, animated: true)
     }
   }

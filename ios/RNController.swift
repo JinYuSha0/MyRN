@@ -28,12 +28,10 @@ class RNController: UIViewController {
     return result
   }
   
-  var bundleName: String
   var moduleName: String
   var params: Dictionary<String, Any>
   
-  init(bundleName: String, moduleName: String, params: Dictionary<String, Any>) {
-    self.bundleName = bundleName
+  init(moduleName: String, params: Dictionary<String, Any>) {
     self.moduleName = moduleName
     self.params = params
     super.init(nibName:nil, bundle:nil)
@@ -50,7 +48,7 @@ class RNController: UIViewController {
   }
   
   func initView() -> Void {
-    let result = RNDBHelper.manager.selectByBundleName(self.bundleName)!
+    let result = RNDBHelper.manager.selectByComponentName(self.moduleName)!
     RNBundleLoader.load(result.FilePath)
     let rctBridge = RNBundleLoader.getBridge()
     let view = RCTRootView(bridge: rctBridge, moduleName: self.moduleName, initialProperties: self.params)

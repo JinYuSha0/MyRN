@@ -27,14 +27,13 @@ export enum StatusBarMode {
  * @param statusBarMode
  */
 export function openComponent(
-  bundlePath: string,
   moduleName: string,
   statusBarMode: StatusBarMode = StatusBarMode.LIGHT,
 ) {
   if (IsIOS) {
-    RNBridge?.openComponent(bundlePath, moduleName);
+    RNBridge?.openComponent(moduleName);
   } else {
-    RNBridge?.openComponent(bundlePath, moduleName, statusBarMode);
+    RNBridge?.openComponent(moduleName, statusBarMode);
   }
 }
 

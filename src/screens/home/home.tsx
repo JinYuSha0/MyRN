@@ -58,9 +58,7 @@ const Home: React.FC<HomeScreenProps<HomeRouteName.Home>> = props => {
             <Button
               marginT-20
               disabled={!component.ComponentName}
-              onPress={() =>
-                openComponent(component.BundleName, component.ComponentName)
-              }
+              onPress={() => openComponent(component.ComponentName)}
               label={'JUMP'}
             />
           </Card>
