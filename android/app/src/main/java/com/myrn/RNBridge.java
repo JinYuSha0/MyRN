@@ -83,13 +83,13 @@ public class RNBridge extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void openComponent(String bundleName, String moduleName, @Nullable Integer statusBarMode) {
+  public void openComponent(String moduleName, @Nullable Integer statusBarMode) {
     Activity activity = getActivity();
     if (activity == null) return;
     Intent intent = new Intent(activity, MainActivity.class);
     Bundle params = new Bundle();
     params.putBoolean("goBack", true);
-    Bundle bundle = createBundle(bundleName, moduleName, statusBarMode, params);
+    Bundle bundle = createBundle(moduleName, statusBarMode, params);
     intent.putExtras(bundle);
     activity.startActivity(intent);
   }
@@ -238,10 +238,9 @@ public class RNBridge extends ReactContextBaseJavaModule {
     }
   }
 
-  public Bundle createBundle(String bundleName, String moduleName, @Nullable Integer statusBarMode, @Nullable Bundle params) {
+  public Bundle createBundle(String moduleName, @Nullable Integer statusBarMode, @Nullable Bundle params) {
     Bundle bundle = new Bundle();
     bundle.putString("moduleName", moduleName);
-    bundle.putString("bundleName", bundleName);
     bundle.putInt("statusBarMode", statusBarMode == null ? 0 : statusBarMode);
     if (params != null) bundle.putAll(params);
     return bundle;

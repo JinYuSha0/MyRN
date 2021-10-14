@@ -132,9 +132,8 @@ public abstract class RNActivity extends androidx.fragment.app.FragmentActivity 
 
   protected void loadScript(LoadScriptListener loadScriptListener) {
     final RNBundle bundle = getBundle();
-    String bundleName = bundle.bundleName;
     String moduleName = bundle.moduleName;
-    RNDBHelper.Result result = RNDBHelper.selectByBundleName(bundleName);
+    RNDBHelper.Result result = RNDBHelper.selectByComponentName(moduleName);
     CatalystInstance instance = RNBundleLoader.getCatalystInstance(mReactNativeHost);
     if (result == null) {
       // 未曾加载的模块

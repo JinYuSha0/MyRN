@@ -4,7 +4,7 @@ import Home from '@registry/home';
 import Test from '@registry/test';
 import { ComponentName } from '@registry/app';
 import { AppRegistry, LogBox, Text } from 'react-native';
-import { name as appName } from './app.json';
+import { name as appName } from './package.json';
 
 const ComponentMap = {
   [appName]: Home,

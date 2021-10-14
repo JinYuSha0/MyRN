@@ -1,5 +1,4 @@
 import React, { useMemo, useContext } from 'react';
-
 export interface ScreenProps {
   routeName: string;
   bundleName: string;

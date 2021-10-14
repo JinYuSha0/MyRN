@@ -5,9 +5,6 @@ import android.os.Bundle;
 import com.myrn.constant.StatusBar;
 
 public class MainActivity extends RNActivity {
-  protected String getDefaultBundleName() {
-    return "home.buz.android.bundle";
-  }
 
   protected String getDefaultComponentName() {
     return "Home";
@@ -33,8 +30,7 @@ public class MainActivity extends RNActivity {
     if (extraParams == null) extraParams = new Bundle();
     params.putAll(bundle);
     params.putAll(extraParams);
-    String bundleName = bundle.getString("bundleName", getDefaultBundleName());
     String moduleName = bundle.getString("moduleName", getDefaultComponentName());
-    return new RNBundle(bundleName, moduleName, params);
+    return new RNBundle(moduleName, params);
   }
 }

@@ -86,9 +86,9 @@ public class RNDBHelper extends SQLiteOpenHelper {
     return result;
   }
 
-  public static RNDBHelper.Result selectByBundleName(String BundleName) {
+  public static RNDBHelper.Result selectByComponentName(String ComponentName) {
     SQLiteDatabase db = mRNDBHelper.getReadableDatabase();
-    String sql = String.format("SELECT * FROM %s WHERE BundleName = \"%s\" ORDER BY Version DESC LIMIT 1;",TABLE_NAME,BundleName);
+    String sql = String.format("SELECT * FROM %s WHERE ComponentName = \"%s\" ORDER BY Version DESC LIMIT 1;",TABLE_NAME,ComponentName);
     Cursor cursor = db.rawQuery(sql,null);
     Result result = null;
     if (cursor.moveToNext()) {
